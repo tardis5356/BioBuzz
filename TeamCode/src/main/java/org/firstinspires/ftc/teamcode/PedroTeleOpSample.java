@@ -15,10 +15,10 @@ public class PedroTeleOpSample extends CommandOpMode {
 
     @Override
     public void initialize() {
-        follower = Constants.createFollower(hardwareMap);
+        follower = Constants.create(hardwareMap);
         super.reset();
 
-        follower.setHeading();
+        follower.setHeading(270);
     }
 
     @Override
@@ -30,12 +30,12 @@ public class PedroTeleOpSample extends CommandOpMode {
         */
 
         // Field-Centric Drive
-        follower.setHeading(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+
         follower.update();
 
-        telemetryData.addData("X", follower..getX());
-        telemetryData.addData("Y", follower.setPose().getY());
-        telemetryData.addData("Heading", follower.setPose().getHeading());
+        telemetryData.addData("X", follower.closestPose().x());
+        telemetryData.addData("Y", follower.closestPose().y());
+        telemetryData.addData("Heading", follower.closestPose().heading());
         telemetryData.update();
     }
 }

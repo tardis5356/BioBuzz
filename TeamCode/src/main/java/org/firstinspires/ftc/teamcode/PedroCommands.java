@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import static com.pedropathing.api.Paths.curve;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
 import com.pedropathing.paths.curves.bezier.BezierCurve;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -22,23 +25,34 @@ public class PedroCommands extends CommandOpMode {
             72, 72, 90
     );
 
-    PathChain pathChain;
+    Pose startPose = new Pose(
+            72, 72, 90
+    );
+    Pose controlPose = new Pose(
+            72, 72, 90
+    );
+    Pose park = new Pose(
+            72, 72, 90
+    );
+
+
+
+    private Path pathChain() {
+        return curve(startPose, controlPose, park).linear(startPose, park);
+    }
+
+
 
     @Override
     public void initialize() {
         super.reset();
 
-        pathChain = follower.pathIndex()
-                .addPath(new BezierCurve(
-                        new Pose(0, 0, Math.toRadians(0)),
-                        new Pose(16, 28, Math.toRadians(90)))
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
-                .build();
+
 
         schedule(
                 // Updates follower to follow path
                 new RunCommand(() -> follower.update()),
-0o
+
 
                 // HoldPointCommand
                 new HoldPointCommand(follower, new Pose(0, 4, 0), false),
@@ -53,10 +67,10 @@ public class PedroCommands extends CommandOpMode {
                 new TurnToCommand(follower, 90.0, AngleUnit.DEGREES),
 
                 // FollowPathCommand
-                new FollowPathCommand(follower, pathChain),
-                new FollowPathCommand(follower, pathChain, true),
-                new FollowPathCommand(follower, pathChain, true, 1.0),
-                new FollowPathCommand(follower, pathChain, true, 1.0).setGlobalMaxPower(1.0)
+                new FollowPathCommand(follower, pathChain()),
+                new FollowPathCommand(follower, pathChain(), true),
+                new FollowPathCommand(follower, pathChain(), true, 1.0),
+                new FollowPathCommand(follower, pathChain(), true, 1.0).setGlobalMaxPower(1.0)
         );
     }
 
