@@ -1,39 +1,40 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 
-import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
-
+import static org.firstinspires.ftc.teamcode.Subsystems.Intake.mI;
+import static org.firstinspires.ftc.teamcode.Subsystems.BotPositions.Turret.TICKS_PER_DEGREE;
 import static java.lang.Math.signum;
 
-import com.pedropathing.api.PoseFactory;
+import com.pedropathing.controllers.PIDController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
 
 import java.util.Map;
 
 
 public class Turret extends SubsystemBase {
 
-    public static Servo sT1;
-    public Servo sT2;
-    public Servo sT3;
-    public static double turretOffset = 0;
+    public static CRServo sT1, sT2, sT3;
+    private final CRServo[] turretServos = {sT1, sT2, sT3};
+    private final VoltageSensor voltageSensor;
     public static int manualOffset = 0;
     public static double turretError;
 
-    public static int desiredPosition;
+    public static int desiredTicks;
     private static double targetPositionTicks;
 
-
-    public int desiredTagID;
+    private final PIDController pidController;
+    public boolean PIDDisabled;
 
 
     public GoBildaPinpointDriver driver;
@@ -42,7 +43,14 @@ public class Turret extends SubsystemBase {
     public Turret(HardwareMap hardwareMap) {
 
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        mI.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        pidController = new PIDController(BotPositions.Turret.KP, BotPositions.Turret.KI, BotPositions.Turret.KD);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
+        //TODO for servo direction
+        sT1.setDirection(DcMotorSimple.Direction.FORWARD);
+        sT2.setDirection(DcMotorSimple.Direction.FORWARD);
+        sT3.setDirection(DcMotorSimple.Direction.FORWARD);
         //TODO Check Calibration For Pinpoint
         driver.setEncoderResolution(1 / 0.00197, DistanceUnit.INCH);
 
@@ -50,9 +58,9 @@ public class Turret extends SubsystemBase {
     }
 
     // === BASIC CONTROLS ===
-    //TODO TBD
+
     public static double getCurrentPosition() {
-        return sT1.getPosition();
+        return mI.getCurrentPosition();
     }
 
     public static double getTargetPosition() {
@@ -66,11 +74,35 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
 
+        turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / BotPositions.Turret.TICKS_PER_DEGREE);
+
+        double servoPower;
+        if (!PIDDisabled) {
+
+            if (Math.abs(getCurrentPosition() - getTargetPosition()) / BotPositions.Turret.TICKS_PER_DEGREE > BotPositions.Turret.TOLERANCE_DEGREE) {
+                servoPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+            } else servoPower = 0;
+
+        } else servoPower = 0;
+
+        setTurretServoPower((servoPower + signum(servoPower) * BotPositions.Turret.KS) * (12 / voltageSensor.getVoltage()));
     }
 
+    public void setTurretServoPower(double power) {
+        for (CRServo s : turretServos) {
+            s.setPower(power);
+        }
+    }
 
+    public void disablePID() {
+        PIDDisabled = true;
+    }
+
+    public void enablePID() {
+        PIDDisabled = false;
+    }
     public double getTurretThetaRAD() {
-        return (getCurrentPosition() * TurretValues.RADIANS_PER_SERVO_POS);
+        return (getCurrentPosition() * BotPositions.Turret.RADIANS_PER_TICK);
     }
 
     public double getTurretThetaDEG() {
@@ -78,21 +110,21 @@ public class Turret extends SubsystemBase {
     }
 
 
-
     GlobalVariables.TargetHive targetHive;
 
     private static final Map<GlobalVariables.TargetHive, Pose> HIVE_POSES = Map.of(
-            GlobalVariables.TargetHive.BLUE_AUDIENCE, new Pose(84, 54, 0),
-            GlobalVariables.TargetHive.BLUE_SCORING, new Pose(84, 87, 0),
-            GlobalVariables.TargetHive.RED_SCORING, new Pose(58, 87, 0),
-            GlobalVariables.TargetHive.RED_AUDIENCE, new Pose(58, 54, 0)
+            GlobalVariables.TargetHive.BLUE_AUDIENCE, BotPositions.Hive.BLUE_AUDIENCE,
+            GlobalVariables.TargetHive.BLUE_SCORING, BotPositions.Hive.BLUE_SCORING,
+            GlobalVariables.TargetHive.RED_SCORING, BotPositions.Hive.RED_SCORING,
+            GlobalVariables.TargetHive.RED_AUDIENCE, BotPositions.Hive.RED_AUDIENCE
     );
 
 
     Pose hivePose;
+
     public void updateTurretTracking(Follower follower, Telemetry telemetry) {
 
-        hivePose =  HIVE_POSES.get(targetHive);
+        hivePose = HIVE_POSES.get(targetHive);
         double goalX = hivePose.x();
         double goalY = hivePose.y();
 
@@ -104,12 +136,12 @@ public class Turret extends SubsystemBase {
 
         // === COMPUTE TURRET WORLD POSITION ===
         double turretFieldX =
-                robotX + Math.cos(robotHeadingRad) * TurretValues.OFFSET_X
-                        - Math.sin(robotHeadingRad) * TurretValues.OFFSET_Y;
+                robotX + Math.cos(robotHeadingRad) * BotPositions.Turret.OFFSET_X
+                        - Math.sin(robotHeadingRad) * BotPositions.Turret.OFFSET_Y;
 
         double turretFieldY =
-                robotY + Math.sin(robotHeadingRad) * TurretValues.OFFSET_X
-                        + Math.cos(robotHeadingRad) * TurretValues.OFFSET_Y;
+                robotY + Math.sin(robotHeadingRad) * BotPositions.Turret.OFFSET_X
+                        + Math.cos(robotHeadingRad) * BotPositions.Turret.OFFSET_Y;
 
         // === DESIRED FIELD ANGLE TO TARGET ===
         double desiredFieldTurretAngleRAD =
@@ -119,15 +151,15 @@ public class Turret extends SubsystemBase {
         double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad) % (2 * Math.PI);
 
         // === LIMIT TO MAX TURRET ANGLE (avoid cable wrap) ===
-        if (desiredTurretOnBotAngleRAD > Math.toRadians(TurretValues.MAX_ROTATION_DEG)) {
+        if (desiredTurretOnBotAngleRAD > Math.toRadians(BotPositions.Turret.MAX_ROTATION_DEG)) {
             desiredTurretOnBotAngleRAD -= 2 * Math.PI;
         }
 
         // === CONVERT TO TICKS ===
-        desiredPosition = (int) Math.round(desiredTurretOnBotAngleRAD / TurretValues.RADIANS_PER_SERVO_POS)
+        desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / BotPositions.Turret.RADIANS_PER_TICK)
                 + manualOffset;
 
-        setTargetPosition(desiredPosition);
+        setTargetPosition(desiredTicks);
 
         // === UPDATE GLOBAL DISTANCE ===
         GlobalVariables.distanceFromTarget =
@@ -138,10 +170,10 @@ public class Turret extends SubsystemBase {
         telemetry.addData("Turret Theta (deg) Current Error",
                 "%.2f   %.2f",
                 Math.toDegrees(getTurretThetaRAD()),
-                (getCurrentPosition() - desiredPosition) / TurretValues.SERVO_POS_PER_DEG);
+                (getCurrentPosition() - desiredTicks) / TICKS_PER_DEGREE);
 
         telemetry.addData("TurretError",
-                (desiredPosition - getCurrentPosition()) / TurretValues.SERVO_POS_PER_DEG);
+                (desiredTicks - getCurrentPosition()) / TICKS_PER_DEGREE);
     }
 
 
