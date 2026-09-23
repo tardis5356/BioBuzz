@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode.Subsystems;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems;
 
 
-import static org.firstinspires.ftc.teamcode.Subsystems.Intake.mI;
-import static org.firstinspires.ftc.teamcode.Subsystems.BotPositions.Turret.TICKS_PER_DEGREE;
+import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables.inAuto;
+import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake.mI;
+import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.BotPositions.Turret.TICKS_PER_DEGREE;
 import static java.lang.Math.signum;
 
 import com.pedropathing.controllers.PIDController;
@@ -12,6 +13,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -34,25 +36,29 @@ public class Turret extends SubsystemBase {
     private static double targetPositionTicks;
 
     private final PIDController pidController;
-    public boolean PIDDisabled;
-
+    public boolean PIDDisabled = false;
+    public static double turretOffset = 0;
+    public DigitalChannel bbT;
 
     public GoBildaPinpointDriver driver;
 
 
     public Turret(HardwareMap hardwareMap) {
-
-        driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        if (inAuto) {
+            mI.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        }
+        bbT = hardwareMap.get(DigitalChannel.class, "bbT");
         mI.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         pidController = new PIDController(BotPositions.Turret.KP, BotPositions.Turret.KI, BotPositions.Turret.KD);
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
+
+        bbT.setMode(DigitalChannel.Mode.INPUT);
+
 
         //TODO for servo direction
         sT1.setDirection(DcMotorSimple.Direction.FORWARD);
         sT2.setDirection(DcMotorSimple.Direction.FORWARD);
         sT3.setDirection(DcMotorSimple.Direction.FORWARD);
-        //TODO Check Calibration For Pinpoint
-        driver.setEncoderResolution(1 / 0.00197, DistanceUnit.INCH);
 
         manualOffset = 0;
     }
@@ -60,7 +66,7 @@ public class Turret extends SubsystemBase {
     // === BASIC CONTROLS ===
 
     public static double getCurrentPosition() {
-        return mI.getCurrentPosition();
+        return mI.getCurrentPosition() + turretOffset;
     }
 
     public static double getTargetPosition() {
@@ -73,6 +79,10 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
+//TODO Test
+//        if (bbT.getState()) {
+//            turretOffset += mI.getCurrentPosition();
+//        }
 
         turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / BotPositions.Turret.TICKS_PER_DEGREE);
 
@@ -101,6 +111,7 @@ public class Turret extends SubsystemBase {
     public void enablePID() {
         PIDDisabled = false;
     }
+
     public double getTurretThetaRAD() {
         return (getCurrentPosition() * BotPositions.Turret.RADIANS_PER_TICK);
     }
@@ -110,7 +121,7 @@ public class Turret extends SubsystemBase {
     }
 
 
-    GlobalVariables.TargetHive targetHive;
+    public static GlobalVariables.TargetHive targetHive;
 
     private static final Map<GlobalVariables.TargetHive, Pose> HIVE_POSES = Map.of(
             GlobalVariables.TargetHive.BLUE_AUDIENCE, BotPositions.Hive.BLUE_AUDIENCE,

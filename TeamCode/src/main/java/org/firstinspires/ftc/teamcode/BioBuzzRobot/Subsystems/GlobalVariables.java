@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Subsystems;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems;
 
 public class GlobalVariables {
     public enum AColor {
@@ -6,6 +6,7 @@ public class GlobalVariables {
         BLUE
     }
     public static double distanceFromTarget;
+    public static boolean inAuto;
 
     public enum TargetHive{
         RED_AUDIENCE,

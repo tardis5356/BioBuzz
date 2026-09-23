@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.Subsystems;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -16,6 +17,7 @@ public class Intake extends SubsystemBase {
 
     public Intake(HardwareMap hardwareMap) {
         mI = hardwareMap.get(DcMotorEx.class, "mI");
+        mI.setDirection(DcMotorSimple.Direction.FORWARD);
         intake_State = intake_State.STOP;
     }
 

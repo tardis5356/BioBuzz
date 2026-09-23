@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Subsystems;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems;
 
 import com.pedropathing.math.Pose;
 
@@ -25,16 +25,16 @@ public final class BotPositions {
         public static double
                 KP = 0, KI = 0, KD = 0, KS = 0;
 
-        public static final Map<org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset, Double> HOOD_PRESETS = Map.of(
-                org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset.CLOSE, 0.7,
-                org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset.MID,   0.44,
-                org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset.FAR,   0.33
+        public static final Map<org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset, Double> HOOD_PRESETS = Map.of(
+                org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset.CLOSE, 0.7,
+                org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset.MID,   0.44,
+                org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset.FAR,   0.33
         );
 
-        public static final Map<org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset, Double> FLYWHEEL_PRESETS = Map.of(
-                org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset.CLOSE, 850.0,
-                org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset.MID,   925.0,
-                org.firstinspires.ftc.teamcode.Subsystems.Shooter.ShooterPreset.FAR,   1150.0
+        public static final Map<org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset, Double> FLYWHEEL_PRESETS = Map.of(
+                org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset.CLOSE, 850.0,
+                org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset.MID,   925.0,
+                org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter.ShooterPreset.FAR,   1150.0
         );
 
     }

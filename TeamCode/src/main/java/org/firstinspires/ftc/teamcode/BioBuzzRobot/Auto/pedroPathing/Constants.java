@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing;
 
 
 import com.pedropathing.follower.Follower;

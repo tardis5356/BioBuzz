@@ -1,8 +1,5 @@
-package org.firstinspires.ftc.teamcode.Subsystems;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems;
 
-
-import static org.firstinspires.ftc.teamcode.Subsystems.BotPositions.Shooter.FLYWHEEL_PRESETS;
-import static org.firstinspires.ftc.teamcode.Subsystems.BotPositions.Shooter.HOOD_PRESETS;
 
 import com.pedropathing.controllers.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,10 +14,9 @@ import com.seattlesolvers.solverslib.controller.wpilibcontroller.SimpleMotorFeed
 
 import org.firstinspires.ftc.teamcode.Util.InterpolatingDoubleTreeMap;
 
-import java.util.Map;
-
 public class Shooter extends SubsystemBase {
     private final VoltageSensor voltageSensor;
+    public static boolean firing;
 
     //declare and define controllers
     PIDController velPIDController = new PIDController(BotPositions.Shooter.KP, BotPositions.Shooter.KI, BotPositions.Shooter.KD);

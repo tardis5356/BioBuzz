@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.procedures;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing.procedures;
 
 import com.pedropathing.tuning.autotune.Display;
 import com.pedropathing.tuning.autotune.Display.FourWheelBot.Wheel;

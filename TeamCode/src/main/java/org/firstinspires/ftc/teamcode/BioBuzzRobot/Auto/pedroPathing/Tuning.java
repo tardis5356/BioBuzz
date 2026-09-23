@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing;
 
 import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.tuning.autotune.Procedure;
 import com.pedropathing.tuning.autotune.Tuner;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.procedures.Tests;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing.procedures.Tests;
 
 public class Tuning {
     @Tuner
