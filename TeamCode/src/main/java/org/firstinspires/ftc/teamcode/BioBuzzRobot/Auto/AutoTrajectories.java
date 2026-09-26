@@ -23,11 +23,12 @@ public class AutoTrajectories {
         RED_SCORING,
         BLUE_SCORING
     }
+
     static StartQuadrant startQuadrant;
 
     public static void generateTrajectories(Follower follower) {
 
-        switch (startQuadrant){
+        switch (startQuadrant) {
             case RED_SCORING:
                 poseFactory.mirrorX(70.75);
             case RED_AUDIENCE:
@@ -37,11 +38,10 @@ public class AutoTrajectories {
             case BLUE_SCORING:
                 poseFactory.mirrorX(70.75);
                 break;
-                //the default is BLUE_AUDIENCE
+            //the default is BLUE_AUDIENCE
             case BLUE_AUDIENCE:
                 break;
         }
-
 
 
     }

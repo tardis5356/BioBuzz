@@ -10,6 +10,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing.Constants;
 
@@ -20,6 +21,7 @@ public class BioBuzzAuto extends OpMode {
     private Turret turret;
     private Intake intake;
     private Shooter shooter;
+    private Transfer transfer;
 
     @Override
     public void init() {
@@ -31,6 +33,7 @@ public class BioBuzzAuto extends OpMode {
         turret = new Turret(hardwareMap);
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
+        transfer = new Transfer(hardwareMap);
 
     }
 
@@ -43,7 +46,7 @@ public class BioBuzzAuto extends OpMode {
     public void start() {
 
         AutoTrajectories.generateTrajectories(follower);
-        SequentialCommandGroup auto = AutoGenerator.buildAuto(follower, intake, turret, shooter);
+        SequentialCommandGroup auto = AutoGenerator.buildAuto(follower, intake, turret, shooter, transfer);
         CommandScheduler.getInstance().schedule(
                 auto
         );

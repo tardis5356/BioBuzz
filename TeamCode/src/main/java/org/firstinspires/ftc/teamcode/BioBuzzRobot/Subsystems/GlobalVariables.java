@@ -5,10 +5,11 @@ public class GlobalVariables {
         RED,
         BLUE
     }
+
     public static double distanceFromTarget;
     public static boolean inAuto;
 
-    public enum TargetHive{
+    public enum TargetHive {
         RED_AUDIENCE,
         BLUE_AUDIENCE,
         RED_SCORING,

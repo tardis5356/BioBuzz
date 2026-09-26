@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.Util.InterpolatingDoubleTreeMap;
 
 public class Shooter extends SubsystemBase {
     private final VoltageSensor voltageSensor;
-    public static boolean firing;
 
     //declare and define controllers
     PIDController velPIDController = new PIDController(BotPositions.Shooter.KP, BotPositions.Shooter.KI, BotPositions.Shooter.KD);
@@ -45,6 +44,7 @@ public class Shooter extends SubsystemBase {
         MID,
         FAR
     }
+
     public ShooterPreset shooterPreset = ShooterPreset.MID;
 
     ElapsedTime time;
@@ -77,6 +77,7 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
+        setTargetDistance(GlobalVariables.distanceFromTarget);
 
         setVel(WheelRegression.get(distanceFromTarget));
 
@@ -118,17 +119,21 @@ public class Shooter extends SubsystemBase {
         }
 
     }
+
     public void setVel(double tps) {
         targetFlyWheelSpeed = tps;
     }
+
     public double calculatePIDFlyWheelPower(double tps) {
         return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
     }
+
     public double calculateBangBangFlyWheelPower(double tps) {
         if (getFlyWheelSpeed() >= tps) {
             return 0;
         } else return 1;
     }
+
     public double getFlyWheelSpeed() {
         return mSR.getVelocity();
     }
