@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.BioBuzzRobot.TeleOp;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.AutoTrajectories.savedPose;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables.inAuto;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake.intake_State;
+import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp.rampState;
 
 
 import com.pedropathing.follower.Follower;
@@ -15,9 +16,12 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.LaunchSequenceCommand;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.RampToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret;
@@ -29,6 +33,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
     Turret turret;
     Shooter shooter;
     Transfer transfer;
+    Ramp ramp;
     private DcMotorEx mFL, mFR, mBL, mBR;
     GamepadEx driver1, driver2;
     Follower follower;
@@ -46,6 +51,9 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
+        transfer = new Transfer(hardwareMap);
+        turret = new Turret(hardwareMap);
+        ramp = new Ramp(hardwareMap);
         driveInit();
         shooter.spinning = true;
 
@@ -59,17 +67,24 @@ public class BioBuzzTeleOp extends CommandOpMode {
             follower.update();
         }
         //INTAKE
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.A) &&  intake_State != Intake.Intake_State.IN && !Intake.autoIntake).whenActive(
-                new InstantCommand(intake::in)
-        );
+        Trigger manualIntakeMode = new Trigger(() -> Intake.intakeMode == Intake.IntakeMode.MANUAL);
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.B) && intake_State != Intake.Intake_State.OUT && !Intake.autoIntake).whenActive(
-                new InstantCommand(intake::out)
-        );
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
+                .and(manualIntakeMode)
+                .whenActive(new IntakeToggleCommand(intake, Intake.Intake_State.IN));
 
-        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.A) ^ driver1.getButton(GamepadKeys.Button.B)) && intake_State != Intake.Intake_State.STOP && !Intake.autoIntake).whenActive(
-                new InstantCommand(intake::stop)
-        );
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.B))
+                .and(manualIntakeMode)
+                .whenActive(new IntakeToggleCommand(intake, Intake.Intake_State.OUT));
+
+        //RAMP
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
+                .and(manualIntakeMode)
+                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.FRONT));
+
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
+                .and(manualIntakeMode)
+                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.FRONT));
 
         //SHOOTER
         new Trigger(() -> (driver1.getButton(GamepadKeys.Button.X))).whenActive(
@@ -86,7 +101,9 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
                 .whenInactive(() -> shooter.hoodOffset -= .02);
+
         //Camera
+
         //Turret
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))
                 .toggleWhenActive(

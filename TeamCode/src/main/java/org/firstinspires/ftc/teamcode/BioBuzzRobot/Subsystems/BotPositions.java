@@ -5,22 +5,22 @@ import com.pedropathing.math.Pose;
 import java.util.Map;
 
 public final class BotPositions {
-
-    // === ROBOT GEOMETRY ===
     public static final class Turret {
-        public static double
-                RADIANS_PER_SERVO_POSITION = 6.99877 / 100.0,
-                SERVO_POSITION_PER_DEGREE = 100.0 / 401.0,
-                OFFSET_X = 0.0, OFFSET_Y = 0.0,
-                MAX_ROTATION_DEG = 400.0 / 2.0;
+        public static final double TOTAL_DEGREES = 401.710526316;
+        public static final double TOTAL_RADIANS = Math.toRadians(TOTAL_DEGREES);
+        public static final double RADIANS_PER_SERVO_POSITION = TOTAL_RADIANS;
+        public static final double SERVO_POSITION_PER_DEGREE = 1.0 / TOTAL_DEGREES;
+        public static final double OFFSET_X = 0.0;
+        public static final double OFFSET_Y = 0.0;
+        public static final double MAX_ROTATION_DEG = TOTAL_DEGREES / 2.0;
     }
 
     public static final class Intake {
-
         public static double
                 INTAKE_POWER = 1,
-                OUTTAKE_POWER = -1,
-        EJECT_TIME_MS = 500;
+                OUTTAKE_POWER = -1;
+        public static long
+                EJECT_TIME_MS = 500;
     }
 
     public static final class Shooter {
@@ -41,11 +41,17 @@ public final class BotPositions {
 
     }
 
-    public static final class Storage {
+    public static final class Transfer {
         public static double OPEN = 0, CLOSE = 0;
     }
 
-    // === FIELD POSITIONS ===
+    public static final class Ramp {
+        public static double
+                FRONT = 0,
+                BACK = 0,
+                RETRACT = 0;
+    }
+
     public static final class Hive {
         public static final Pose BLUE_AUDIENCE = new Pose(84, 54, 0);
         public static final Pose BLUE_SCORING = new Pose(84, 87, 0);

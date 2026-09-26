@@ -11,6 +11,7 @@ public class Transfer extends SubsystemBase {
 
     public Transfer(HardwareMap hardwareMap) {
         sG = hardwareMap.get(Servo.class, "sG");
+        closeGate();
     }
 
     @Override
@@ -19,12 +20,12 @@ public class Transfer extends SubsystemBase {
     }
 
     public void openGate() {
-        sG.setPosition(BotPositions.Storage.OPEN);
+        sG.setPosition(BotPositions.Transfer.OPEN);
         gate_Open = true;
     }
 
     public void closeGate() {
-        sG.setPosition(BotPositions.Storage.CLOSE);
+        sG.setPosition(BotPositions.Transfer.CLOSE);
         gate_Open = false;
     }
 }

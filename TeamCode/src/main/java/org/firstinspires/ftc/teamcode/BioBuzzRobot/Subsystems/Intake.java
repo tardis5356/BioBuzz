@@ -11,25 +11,22 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
-    public static Intake_State intake_State;
+    public static Intake_State intake_State =  Intake_State.STOP;
 
     public enum Intake_State { IN, STOP, OUT }
 
-    public enum Mode {
+    public enum IntakeMode {
         MANUAL,
         AUTO
     }
-    private Mode mode = Mode.MANUAL;
+    public static IntakeMode intakeMode = IntakeMode.MANUAL;
 
 
     private DcMotorEx mI;
     private DigitalChannel[] intake_BeamBreaks;
 
-    public static boolean autoIntake = false;
-    private boolean overflowTimerRunning = false;
-
     private final ElapsedTime bbOverflowTimer = new ElapsedTime();
-    private Intake_State intake_State = Intake_State.STOP;
+
 
     public Intake(HardwareMap hardwareMap) {
 
@@ -47,6 +44,7 @@ public class Intake extends SubsystemBase {
         bb4.setMode(DigitalChannel.Mode.INPUT);
 
         intake_BeamBreaks = new DigitalChannel[]{bb1, bb2, bb3, bb4};
+        stop();
     }
 
     @Override
@@ -59,24 +57,20 @@ public class Intake extends SubsystemBase {
         }
 
         // Overflow logic
-        if (bbBallCount > 2) {
-            if (!overflowTimerRunning) {
-                overflowTimerRunning = true;
-                bbOverflowTimer.reset();
-            }
-        } else {
-            overflowTimerRunning = false;
+        if (bbBallCount <= 2) {
             bbOverflowTimer.reset();
         }
 
         // Overflow action
-        if (overflowTimerRunning && bbOverflowTimer.seconds() > 1.0) {
+        if (intakeMode == IntakeMode.MANUAL && bbOverflowTimer.seconds() > 0.5) {
             enableAuto();
             out();
-            sleep(300);
+            sleep(BotPositions.Intake.EJECT_TIME_MS);
+            bbOverflowTimer.reset();
             disableAuto();
             stop();
         }
+
     }
 
     public void in() {
@@ -93,17 +87,12 @@ public class Intake extends SubsystemBase {
         mI.setPower(0);
         intake_State = Intake_State.STOP;
     }
-
-    public boolean isAuto() {
-        return mode == Mode.AUTO;
-    }
-
     public void enableAuto() {
-        mode = Mode.AUTO;
+        intakeMode = IntakeMode.AUTO;
     }
 
     public void disableAuto() {
-        mode = Mode.MANUAL;
+        intakeMode = IntakeMode.MANUAL;
     }
 }
 
