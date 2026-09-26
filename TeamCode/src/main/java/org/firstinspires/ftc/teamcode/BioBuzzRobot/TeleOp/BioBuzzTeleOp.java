@@ -84,7 +84,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
                 .and(manualIntakeMode)
-                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.FRONT));
+                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.BACK));
 
         //SHOOTER
         new Trigger(() -> (driver1.getButton(GamepadKeys.Button.X))).whenActive(
