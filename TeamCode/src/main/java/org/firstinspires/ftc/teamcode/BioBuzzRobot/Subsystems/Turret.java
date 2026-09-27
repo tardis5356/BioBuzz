@@ -97,9 +97,9 @@ public class Turret extends SubsystemBase {
 
 
         // === GET ROBOT POSE FROM PEDRO LOCALIZER ===
-        double robotX = follower.closestPose().x();    // Pedro stores raw doubles
-        double robotY = follower.closestPose().y();
-        double robotHeadingRad = follower.closestPose().heading();
+        double robotX = follower.pose().x();    // Pedro stores raw doubles
+        double robotY = follower.pose().y();
+        double robotHeadingRad = follower.pose().heading();
 
         // === COMPUTE TURRET WORLD POSITION ===
         double turretFieldX =

@@ -34,7 +34,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
     Shooter shooter;
     Transfer transfer;
     Ramp ramp;
-    private DcMotorEx mFL, mFR, mBL, mBR;
+
     GamepadEx driver1, driver2;
     Follower follower;
     double FB, LR, Rotation;
@@ -54,7 +54,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
         transfer = new Transfer(hardwareMap);
         turret = new Turret(hardwareMap);
         ramp = new Ramp(hardwareMap);
-        driveInit();
+        CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
         shooter.spinning = true;
 
         driver1 = new GamepadEx(gamepad1);
@@ -140,34 +140,15 @@ public class BioBuzzTeleOp extends CommandOpMode {
         turret.updateTurretTracking(follower, telemetry);
     }
 
-    public void driveInit() {
-        mFL = hardwareMap.get(DcMotorEx.class, "mFL");
-        mFR = hardwareMap.get(DcMotorEx.class, "mFR");
-        mBL = hardwareMap.get(DcMotorEx.class, "mBL");
-        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
-
-        mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
-    }
 
     public void driveRun() {
-        Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75;
-        FB = -cubicScaling(gamepad1.left_stick_y);
-        LR = -cubicScaling(-gamepad1.left_stick_x) * 1.2;
+        Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75 * CURRENT_SPEED_MULTIPLIER;
+        FB = cubicScaling(gamepad1.left_stick_y) * CURRENT_SPEED_MULTIPLIER;
+        LR = cubicScaling(gamepad1.left_stick_x) * 1.2 * CURRENT_SPEED_MULTIPLIER;
 
-        mFLPower = FB + LR + Rotation;
-        mFRPower = FB - LR - Rotation;
-        mBLPower = FB - LR + Rotation;
-        mBRPower = FB + LR - Rotation;
+       follower.manual(FB, LR, Rotation);
 
-        mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
-        mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
-        mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
-        mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+
     }
 
     private double cubicScaling(float joystickValue) {

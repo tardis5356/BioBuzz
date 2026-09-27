@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret;
@@ -22,6 +24,8 @@ public class BioBuzzAuto extends OpMode {
     private Intake intake;
     private Shooter shooter;
     private Transfer transfer;
+    private Camera camera;
+    private Ramp ramp;
 
     @Override
     public void init() {
@@ -46,7 +50,7 @@ public class BioBuzzAuto extends OpMode {
     public void start() {
 
         AutoTrajectories.generateTrajectories(follower);
-        SequentialCommandGroup auto = AutoGenerator.buildAuto(follower, intake, turret, shooter, transfer);
+        SequentialCommandGroup auto = AutoGenerator.buildAuto(follower, intake, turret, shooter, transfer, camera, ramp);
         CommandScheduler.getInstance().schedule(
                 auto
         );
@@ -56,7 +60,7 @@ public class BioBuzzAuto extends OpMode {
     public void loop() {
         CommandScheduler.getInstance().run();
         follower.update();
-        AutoTrajectories.savedPose = follower.closestPose();
+        AutoTrajectories.savedPose = follower.pose();
         turret.updateTurretTracking(follower, telemetry);
     }
 

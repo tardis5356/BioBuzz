@@ -1,7 +1,16 @@
 package org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems;
 
 
+
+import static com.pedropathing.api.Paths.*;
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.command.Command;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PDController;
 
@@ -23,153 +32,302 @@ import org.opencv.imgproc.Moments;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.geometry.Pose2d;
+import com.seattlesolvers.solverslib.geometry.Vector2d;
+import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
+
+
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+
 
 public class Camera extends SubsystemBase {
 
-    private static final int IMG_HEIGHT = 720;
-    private static final int IMG_WIDTH = 1280;
-    // === HARDWARE AND PROCESSORS ===
-    public VisionPortal visionPortal;
-    public final WebcamName frontWebcam, backWebcam;
-
-    PDController controller;
-    public double p = .001, d = .0003;
-    public double FB = 0, LR = 0, Rotation = 0.;
-
-    //OpenCV stuff
-    double cX = 0;
-    double cY = 0;
-    double width = 0;
-
-    MatOfPoint lC;
-    private static final int CAMERA_WIDTH = 1280; // width  of wanted camera resolution
-    private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
-
-    // Calculate the distance using the formula
-    public static final double objectWidthInRealWorldUnits = 2.5;  // Replace with the actual width of the object in real-world units (in inches)
-    public static final double focalLength = (10 * 460) / objectWidthInRealWorldUnits;
-    List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-
-    private CameraName switchableCamera;
+    private OpenCvCamera frontCam;
+    private OpenCvCamera backCam;
+    private OpenCvCamera activeCam;
 
     public enum ActiveCamera {
-        BACK,
-        FRONT
+        FRONT,
+        BACK
     }
 
-    private ActiveCamera currentCamera = ActiveCamera.FRONT;
+    public ActiveCamera currentCamera = ActiveCamera.FRONT;
+
+    private List<TrackedBall> tracks = new ArrayList<>();
+    private int nextId = 0;
+
+    private YellowBallPipeline pipeline = new YellowBallPipeline();
 
     public Camera(HardwareMap hardwareMap) {
-        backWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
-        frontWebcam = hardwareMap.get(WebcamName.class, "Webcam 1");
 
+        int viewId = hardwareMap.appContext.getResources()
+                .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        // Start with the turret camera
-        switchableCamera = ClassFactory.getInstance()
-                .getCameraManager().nameForSwitchableCamera(frontWebcam, backWebcam);
-        ;
+        frontCam = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 1"), viewId);
 
+        backCam = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 2"), viewId);
 
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(switchableCamera)
-                //.addProcessor()
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .setCameraResolution(new android.util.Size(IMG_WIDTH, IMG_HEIGHT))
-                // .setAutoStartStreamOnBuild(true)
-                .build();
+        frontCam.setPipeline(pipeline);
+        backCam.setPipeline(pipeline);
 
-
+        activeCam = frontCam;
+        openAndStart(activeCam);
     }
 
-    class YellowBlobDetectionPipeline extends OpenCvPipeline {
-        @Override
-        public Mat processFrame(Mat input) {
-            // Preprocess the frame to detect yellow regions
-            Mat yellowMask = preprocessFrame(input);
-
-            // Find contours of the detected yellow regions
-            List<MatOfPoint> contours = new ArrayList<>();
-            Mat hierarchy = new Mat();
-            Imgproc.findContours(yellowMask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-            // Find the largest yellow contour (blob)
-            MatOfPoint largestContour = findLargestContour(contours);
-            lC = largestContour;
-
-            if (largestContour != null) {
-                // Draw a red outline around the largest detected object
-                Imgproc.drawContours(input, contours, contours.indexOf(largestContour), new Scalar(255, 0, 0), 2);
-                // Calculate the width of the bounding box
-                width = calculateWidth(largestContour);
-
-                // Display the width next to the label
-                String widthLabel = "Width: " + (int) width + " pixels";
-                Imgproc.putText(input, widthLabel, new Point(cX + 10, cY + 20), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
-                //Display the Distance
-                String distanceLabel = "Distance: " + String.format("%.2f", getDistance(width)) + " inches";
-                Imgproc.putText(input, distanceLabel, new Point(cX + 10, cY + 60), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
-                // Calculate the centroid of the largest contour
-                Moments moments = Imgproc.moments(largestContour);
-                cX = moments.get_m10() / moments.get_m00();
-                cY = moments.get_m01() / moments.get_m00();
-
-                // Draw a dot at the centroid
-                String label = "(" + (int) cX + ", " + (int) cY + ")";
-                Imgproc.putText(input, label, new Point(cX + 10, cY), Imgproc.FONT_HERSHEY_COMPLEX, 0.5, new Scalar(0, 255, 0), 2);
-                Imgproc.circle(input, new Point(cX, cY), 5, new Scalar(0, 255, 0), -1);
-                //Imgproc.putText(input,,new Point(cX+20, cY), Imgproc.FONT_HERSHEY_COMPLEX, 0.5,);
-
+    private void openAndStart(OpenCvCamera cam) {
+        cam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                cam.startStreaming(
+                        BotPositions.Camera.RES_WIDTH,
+                        BotPositions.Camera.RES_HEIGHT,
+                        OpenCvCameraRotation.UPRIGHT
+                );
             }
 
-            return input;
+            @Override
+            public void onError(int errorCode) {}
+        });
+    }
 
+    public void switchCamera(ActiveCamera cam) {
+        if (cam == currentCamera) return;
+
+        activeCam.stopStreaming();
+
+        activeCam = (cam == ActiveCamera.FRONT) ? frontCam : backCam;
+        currentCamera = cam;
+
+        openAndStart(activeCam);
+    }
+
+    public List<TrackedBall> getTracks() {
+        return tracks;
+    }
+
+    // === DATA CLASSES ===
+
+    public static class DetectedBall {
+        public double x, y, radius;
+
+        public DetectedBall(double x, double y, double radius) {
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+        }
+    }
+
+    public class TrackedBall {
+        public int id;
+        public double x, y, radius;
+        public int framesSinceSeen;
+
+        public TrackedBall(int id, double x, double y, double radius) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.framesSinceSeen = 0;
         }
 
-//
-
-        private Mat preprocessFrame(Mat frame) {
-            Mat hsvFrame = new Mat();
-            Imgproc.cvtColor(frame, hsvFrame, Imgproc.COLOR_BGR2HSV);
-
-            Scalar lowerYellow = new Scalar(100, 100, 100);
-            Scalar upperYellow = new Scalar(180, 230, 230);
-
-
-            Mat yellowMask = new Mat();
-            Core.inRange(hsvFrame, lowerYellow, upperYellow, yellowMask);
-
-            Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
-            Imgproc.morphologyEx(yellowMask, yellowMask, Imgproc.MORPH_OPEN, kernel);
-            Imgproc.morphologyEx(yellowMask, yellowMask, Imgproc.MORPH_CLOSE, kernel);
-
-            return yellowMask;
+        public double getDistanceInches() {
+            return (BotPositions.Camera.BALL_DIAMETER_INCHES *
+                    BotPositions.Camera.FOCAL_LENGTH_PIXELS) / (2.0 * radius);
         }
+    }
 
-        public MatOfPoint findLargestContour(List<MatOfPoint> contours) {
-            double maxArea = 300;
-            MatOfPoint largestContour = null;
+    // === TRACKING LOGIC ===
 
-            for (MatOfPoint contour : contours) {
-                double area = Imgproc.contourArea(contour);
-                if (area > maxArea) {
-                    maxArea = area;
-                    largestContour = contour;
+    private void updateTracks(List<DetectedBall> detections) {
+        boolean[] updated = new boolean[tracks.size()];
+
+        for (DetectedBall det : detections) {
+            int bestIndex = -1;
+            double bestDist = Double.MAX_VALUE;
+
+            for (int i = 0; i < tracks.size(); i++) {
+                TrackedBall t = tracks.get(i);
+                double dx = t.x - det.x;
+                double dy = t.y - det.y;
+                double dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < bestDist && dist < BotPositions.Camera.MAX_ASSOCIATION_DIST) {
+                    bestDist = dist;
+                    bestIndex = i;
                 }
             }
 
-
-            return largestContour;
+            if (bestIndex != -1) {
+                TrackedBall t = tracks.get(bestIndex);
+                t.x = det.x;
+                t.y = det.y;
+                t.radius = det.radius;
+                t.framesSinceSeen = 0;
+                updated[bestIndex] = true;
+            } else {
+                tracks.add(new TrackedBall(nextId++, det.x, det.y, det.radius));
+            }
         }
 
-        private double calculateWidth(MatOfPoint contour) {
-            Rect boundingRect = Imgproc.boundingRect(contour);
-            return boundingRect.width;
+        for (int i = 0; i < tracks.size(); i++) {
+            if (!updated[i]) {
+                tracks.get(i).framesSinceSeen++;
+            }
         }
 
-        private double getDistance(double width) {
-            double distance = (objectWidthInRealWorldUnits * focalLength) / width;
-            return distance;
+        tracks.removeIf(t -> t.framesSinceSeen > BotPositions.Camera.MAX_MISSED_FRAMES);
+    }
+
+    // === PIPELINE ===
+
+    public class YellowBallPipeline extends OpenCvPipeline {
+
+        private Mat hsv = new Mat();
+        private Mat mask = new Mat();
+        private Mat gray = new Mat();
+        private Mat circles = new Mat();
+
+        @Override
+        public Mat processFrame(Mat input) {
+
+            Imgproc.cvtColor(input, hsv, Imgproc.COLOR_BGR2HSV);
+
+            Core.inRange(
+                    hsv,
+                    BotPositions.Camera.HSV_LOWER_YELLOW,
+                    BotPositions.Camera.HSV_UPPER_YELLOW,
+                    mask
+            );
+
+            Mat kernel = Imgproc.getStructuringElement(
+                    Imgproc.MORPH_RECT,
+                    BotPositions.Camera.MORPH_KERNEL_SIZE
+            );
+
+            Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, kernel);
+            Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_CLOSE, kernel);
+
+            Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2GRAY);
+            Imgproc.GaussianBlur(gray, gray, new Size(9, 9), 2);
+
+            circles = new Mat();
+            Imgproc.HoughCircles(
+                    gray,
+                    circles,
+                    Imgproc.HOUGH_GRADIENT,
+                    BotPositions.Camera.HOUGH_DP,
+                    BotPositions.Camera.HOUGH_MIN_DIST,
+                    BotPositions.Camera.HOUGH_PARAM1,
+                    BotPositions.Camera.HOUGH_PARAM2,
+                    BotPositions.Camera.HOUGH_MIN_RADIUS,
+                    BotPositions.Camera.HOUGH_MAX_RADIUS
+            );
+
+            List<DetectedBall> detections = new ArrayList<>();
+
+            if (circles.cols() > 0) {
+                for (int i = 0; i < circles.cols(); i++) {
+                    double[] c = circles.get(0, i);
+                    if (c == null) continue;
+
+                    double cx = c[0];
+                    double cy = c[1];
+                    double r = c[2];
+
+                    if (mask.get((int) cy, (int) cx)[0] < 128) continue;
+
+                    detections.add(new DetectedBall(cx, cy, r));
+                }
+            }
+
+            updateTracks(detections);
+
+            return input;
         }
     }
+
+    // === FIELD POSITION CALCULATION ===
+
+    public Vector2d getBallFieldPosition(
+            Follower follower,
+            TrackedBall ball,
+            boolean usingFrontCamera
+    ) {
+        double FOV = BotPositions.Camera.FOV_HORIZONTAL_RAD;
+
+        double xNorm = (ball.x - BotPositions.Camera.RES_WIDTH / 2.0)
+                / (BotPositions.Camera.RES_WIDTH / 2.0);
+
+        double theta = xNorm * (FOV / 2.0);
+
+        double d = ball.getDistanceInches();
+        double horizontalDistance = d * Math.cos(BotPositions.Camera.PITCH_RADIAN);
+
+        double xr = horizontalDistance * Math.sin(theta);
+        double yr = horizontalDistance * Math.cos(theta);
+
+        yr += usingFrontCamera ? BotPositions.Camera.Y_OFFSET : -BotPositions.Camera.Y_OFFSET;
+        xr += BotPositions.Camera.X_OFFSET;
+
+        Pose pose = follower.pose();
+        double robotX = pose.x();
+        double robotY = pose.y();
+        double robotHeading = pose.heading();
+
+        double cameraHeading = usingFrontCamera
+                ? robotHeading
+                : robotHeading + Math.PI;
+
+        double fieldX = robotX + (xr * Math.cos(cameraHeading) - yr * Math.sin(cameraHeading));
+        double fieldY = robotY + (xr * Math.sin(cameraHeading) + yr * Math.cos(cameraHeading));
+
+        return new Vector2d(fieldX, fieldY);
+    }
+
+    // === PATH GENERATION ===
+
+    public FollowPathCommand goToNearestBall(Follower follower) {
+
+        TrackedBall nearest = null;
+        double bestDist = Double.MAX_VALUE;
+
+        for (TrackedBall t : tracks) {
+            double d = t.getDistanceInches();
+            if (d < bestDist) {
+                bestDist = d;
+                nearest = t;
+            }
+        }
+
+        Vector2d pos = getBallFieldPosition(
+                follower,
+                nearest,
+                currentCamera.equals(ActiveCamera.FRONT)
+        );
+
+        Pose start = follower.pose();
+        Pose ballPos = new Pose(pos.getX(), pos.getY(), 0 );
+
+
+
+        return new FollowPathCommand(follower, line(start, ballPos).tangent());
+    }
 }
+
