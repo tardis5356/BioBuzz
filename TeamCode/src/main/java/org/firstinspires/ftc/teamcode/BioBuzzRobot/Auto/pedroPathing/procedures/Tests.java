@@ -16,8 +16,11 @@ import com.pedropathing.tuning.autotune.Inputs;
 import com.pedropathing.tuning.autotune.Procedure;
 import com.pedropathing.tuning.autotune.TuningOpMode;
 import com.pedropathing.utils.Angle;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -293,7 +296,19 @@ class TestsLocalization extends TuningOpMode<Boolean> {
     public Boolean runTuningOpMode() throws InterruptedException {
         Localizer localizer = localizerFunction.apply(hardwareMap);
         Drivetrain drivetrain = drivetrainFunction.apply(hardwareMap);
+        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
+        //pinpoint.setOffsets(-1, -6, DistanceUnit.INCH);
+
+
+            pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+
+
+//        pinpoint.setEncoderDirections(
+//                GoBildaPinpointDriver.EncoderDirection.FORWARD,
+//                GoBildaPinpointDriver.EncoderDirection.FORWARD
+//        );
+pinpoint.resetPosAndIMU();
         localizer.setPose(Pose.zero());
 
         Thread.sleep(1000);
@@ -303,7 +318,12 @@ class TestsLocalization extends TuningOpMode<Boolean> {
         while (opModeIsActive()) {
             drivetrain.drive(new DrivePowers(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x), true);
             localizer.update();
-            telemetry.addData("Pose", localizer.pose());
+            telemetry.addData("XOdometerTicks", pinpoint.getEncoderX());
+            telemetry.addData("YOdometerTicks", pinpoint.getEncoderY());
+            telemetry.addData("Pose X", "%.2f", localizer.pose().x());
+            telemetry.addData("Pose Y","%.2f", localizer.pose().y());
+            telemetry.addData("Pose DEG","%.2f", Math.toDegrees(localizer.pose().heading()));
+          //  telemetry.addData("X_ticks", );
             telemetry.update();
         }
         return true;
