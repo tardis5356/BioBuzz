@@ -48,6 +48,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -93,7 +94,6 @@ public class Camera extends SubsystemBase {
 
     private void openAndStart(OpenCvCamera cam) {
         cam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
             public void onOpened() {
                 cam.startStreaming(
                         BotPositions.Camera.RES_WIDTH,
@@ -207,7 +207,16 @@ public class Camera extends SubsystemBase {
         @Override
         public Mat processFrame(Mat input) {
 
-            Imgproc.cvtColor(input, hsv, Imgproc.COLOR_BGR2HSV);
+            // === ROI cropping ===
+            Rect roi = new Rect(
+                    0,
+                    BotPositions.Camera.RES_HEIGHT / 2,
+                    BotPositions.Camera.RES_WIDTH,
+                    BotPositions.Camera.RES_HEIGHT / 2
+            );
+            Mat cropped = input.submat(roi);
+
+            Imgproc.cvtColor(cropped, hsv, Imgproc.COLOR_BGR2HSV);
 
             Core.inRange(
                     hsv,
@@ -224,8 +233,8 @@ public class Camera extends SubsystemBase {
             Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, kernel);
             Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_CLOSE, kernel);
 
-            Imgproc.cvtColor(input, gray, Imgproc.COLOR_BGR2GRAY);
-            Imgproc.GaussianBlur(gray, gray, new Size(9, 9), 2);
+            Imgproc.cvtColor(cropped, gray, Imgproc.COLOR_BGR2GRAY);
+            Imgproc.blur(gray, gray, new Size(5, 5));
 
             circles = new Mat();
             Imgproc.HoughCircles(
@@ -253,7 +262,8 @@ public class Camera extends SubsystemBase {
 
                     if (mask.get((int) cy, (int) cx)[0] < 128) continue;
 
-                    detections.add(new DetectedBall(cx, cy, r));
+                    // IMPORTANT: add ROI offset back to Y coordinate
+                    detections.add(new DetectedBall(cx, cy + roi.y, r));
                 }
             }
 
@@ -261,6 +271,7 @@ public class Camera extends SubsystemBase {
 
             return input;
         }
+
     }
 
     // === FIELD POSITION CALCULATION ===

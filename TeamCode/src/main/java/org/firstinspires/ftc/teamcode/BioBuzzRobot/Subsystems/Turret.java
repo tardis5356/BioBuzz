@@ -51,10 +51,10 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
-        setTurretServoPower(getTargetPosition());
+        setTurretServoPosition(getTargetPosition());
     }
 
-    public void setTurretServoPower(double position) {
+    public void setTurretServoPosition(double position) {
         for (Servo s : turretServos) {
             s.setPosition(position);
         }

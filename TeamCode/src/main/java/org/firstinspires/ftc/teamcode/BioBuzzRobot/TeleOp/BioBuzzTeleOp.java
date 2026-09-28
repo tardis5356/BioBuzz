@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.AutoTrajectories.
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables.inAuto;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake.intake_State;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp.rampState;
+import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret.targetHive;
 
 
 import com.pedropathing.follower.Follower;
@@ -127,6 +128,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
                         new InstantCommand(() -> aColor = GlobalVariables.AColor.BLUE)
                 );
 
+
         telemetry.clearAll();
         telemetry.addLine("Ready To Go");
         telemetry.update();
@@ -138,6 +140,11 @@ public class BioBuzzTeleOp extends CommandOpMode {
         driveRun();
         follower.update();
         turret.updateTurretTracking(follower, telemetry);
+        boolean scoring = follower.pose().y() > 72;
+
+        targetHive = (aColor == GlobalVariables.AColor.BLUE)
+                ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
+                : (scoring ? GlobalVariables.TargetHive.RED_SCORING  : GlobalVariables.TargetHive.RED_AUDIENCE);
     }
 
 

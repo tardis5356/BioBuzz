@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto;
 
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.AutoTrajectories.startPose;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables.inAuto;
+import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret.targetHive;
 
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,6 +10,7 @@ import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Camera;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
@@ -26,6 +28,7 @@ public class BioBuzzAuto extends OpMode {
     private Transfer transfer;
     private Camera camera;
     private Ramp ramp;
+    private GlobalVariables.AColor aColor;
 
     @Override
     public void init() {
@@ -61,7 +64,14 @@ public class BioBuzzAuto extends OpMode {
         CommandScheduler.getInstance().run();
         follower.update();
         AutoTrajectories.savedPose = follower.pose();
+
+        boolean scoring = follower.pose().y() > 72;
+        targetHive = (aColor == GlobalVariables.AColor.BLUE)
+                ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
+                : (scoring ? GlobalVariables.TargetHive.RED_SCORING  : GlobalVariables.TargetHive.RED_AUDIENCE);
+
         turret.updateTurretTracking(follower, telemetry);
+
     }
 
 }
