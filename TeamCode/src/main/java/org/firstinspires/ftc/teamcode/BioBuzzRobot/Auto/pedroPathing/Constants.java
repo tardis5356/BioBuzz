@@ -41,18 +41,18 @@ public class Constants {
 
     public static ForesightConfig foresightConfig = new ForesightConfig(
             c -> {
-                Controller primaryTranslationalForward = Controller.proportional(0.17036584794092324);
-                Controller secondaryTranslationalForward = Controller.proportional(0.062945628554874);
-                Controller primaryTranslationalLateral = Controller.proportional(16.468842354618793);
-                Controller secondaryTranslationalLateral = Controller.proportional(6.08479719445931);
+                Controller primaryTranslationalForward = Controller.proportional(0.17036584794092324); // rough adjustment
+                Controller secondaryTranslationalForward = Controller.proportional(0.085);//0.063 // fine adjustment
+                Controller primaryTranslationalLateral = Controller.proportional(16);
+                Controller secondaryTranslationalLateral = Controller.proportional(1);//6.0848
 
-                c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward));
+                c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward)); //primary will switch into secondary within 2.5 inches
                 c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral).put(2.5, primaryTranslationalLateral));
 
-                c.coast.set(Controller.proportionalFeedforward(0.01716256259187282));
-                c.brake.set(Controller.proportionalFeedforward(0.014588178203091898));
+                c.coast.set(Controller.proportionalFeedforward(0.01716256259187282)); // speeding up
+                c.brake.set(Controller.proportionalFeedforward(0.014588178203091898)); // breaking
 
-                c.headingFeedback.set(Controller.proportional(3.5222129658843984));
+                c.headingFeedback.set(Controller.proportional(2));//3.52));
                 c.headingBrakeCoefficients.set(Vector2D.cartesian(0.04088243380659385, 0.004027883077724302));
 
                 c.linearBrakeCoefficients.set(Matrix.diag(0.057244757744923755, 0.043453649770849735));

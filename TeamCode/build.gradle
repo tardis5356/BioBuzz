@@ -19,19 +19,30 @@ apply from: '../build.dependencies.gradle'
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
+    compileSdk 35
+    defaultConfig {
+        minSdk 24
+    }
+
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
 }
 
 repositories {
+    maven  {
+        url = 'https://www.matthewo.tech/maven/'
+    }
     maven {
         url "https://repo.dairy.foundation/releases"
     }
+    maven { url = "https://mymaven.bylazar.com/releases" }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
     implementation "org.solverslib:core:0.3.6" // core
     implementation "org.solverslib:pedroPathing:0.3.6"
+    //implementation "com.bylazar:docs:1.0.5"
+    implementation "com.bylazar:fullpanels:1.0.12"
 }
