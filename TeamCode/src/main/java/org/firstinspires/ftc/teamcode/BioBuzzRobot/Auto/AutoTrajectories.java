@@ -69,7 +69,8 @@ public class AutoTrajectories {
     public Path reverse(Path originalPath) {
 
         // 1. Get start and end Poses directly from Path
-        Pose start = originalPath.get(0.0);
+
+        Pose start = new Pose(originalPath.curve.startPoint().x(), originalPath.curve.startPoint().y(), originalPath.get(0.0).heading());
         Pose end   = originalPath.endPose();
 
         // 2. Reverse geometry

@@ -113,14 +113,10 @@ public class BioBuzzAuto extends OpMode {
     public void loop() {
         CommandScheduler.getInstance().run();
         follower.update();
+        turret.updateTurretTracking(follower, telemetry);
+
         AutoTrajectories.savedPose = follower.pose();
 
-        boolean scoring = follower.pose().y() > 72;
-        targetHive = (aColor == GlobalVariables.AColor.BLUE)
-                ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
-                : (scoring ? GlobalVariables.TargetHive.RED_SCORING : GlobalVariables.TargetHive.RED_AUDIENCE);
-
-        turret.updateTurretTracking(follower, telemetry);
 
         telemetry.update();
     }

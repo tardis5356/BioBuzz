@@ -17,21 +17,27 @@ import java.util.Map;
 
 public class Turret extends SubsystemBase {
 
-    public static Servo sT1, sT2, sT3;
-    private final Servo[] turretServos = {sT1, sT2, sT3};
+    public static Servo sT1, sT2;
+    private final Servo[] turretServos = {sT1, sT2};
 
-    public static int manualOffset = 0;
-    public static double turretError;
+    public static int manualOffsetDegrees = 0;
 
     public static int desiredTicks;
-    private static double targetPositionTicks;
+    private static double targetPosition;
+
+    GlobalVariables.AColor aColor;
 
 
-    public boolean PIDDisabled = false;
+    public boolean TurretTrackingDisabled = false;
 
 
     public Turret(HardwareMap hardwareMap) {
-        manualOffset = 0;
+        manualOffsetDegrees = 0;
+
+        sT1 = hardwareMap.get(Servo.class, "sT1");
+        sT2 = hardwareMap.get(Servo.class, "sT2");
+
+
     }
 
     // === BASIC CONTROLS ===
@@ -42,15 +48,16 @@ public class Turret extends SubsystemBase {
 
 
     public static double getTargetPosition() {
-        return targetPositionTicks;
+        return targetPosition;
     }
 
     public static void setTargetPosition(double position) {
-        targetPositionTicks = position;
+        targetPosition = position;
     }
 
     @Override
     public void periodic() {
+
         setTurretServoPosition(getTargetPosition());
     }
 
@@ -60,12 +67,12 @@ public class Turret extends SubsystemBase {
         }
     }
 
-    public void disablePID() {
-        PIDDisabled = true;
+    public void disableTurretTracking() {
+        TurretTrackingDisabled = true;
     }
 
-    public void enablePID() {
-        PIDDisabled = false;
+    public void enableTurretTracking() {
+        TurretTrackingDisabled = false;
     }
 
     public double getTurretThetaRAD() {
@@ -91,6 +98,12 @@ public class Turret extends SubsystemBase {
 
     public void updateTurretTracking(Follower follower, Telemetry telemetry) {
 
+        boolean scoring = follower.pose().y() > 72;
+
+        targetHive = (aColor == GlobalVariables.AColor.BLUE)
+                ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
+                : (scoring ? GlobalVariables.TargetHive.RED_SCORING : GlobalVariables.TargetHive.RED_AUDIENCE);
+
         hivePose = HIVE_POSES.get(targetHive);
         double goalX = hivePose.x();
         double goalY = hivePose.y();
@@ -115,7 +128,7 @@ public class Turret extends SubsystemBase {
                 Math.atan2(goalY - turretFieldY, goalX - turretFieldX) + Math.PI;
 
         // === CONVERT FIELD ANGLE → ROBOT-RELATIVE TURRET ANGLE ===
-        double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad) % (2 * Math.PI);
+        double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad + Math.toRadians(manualOffsetDegrees)) % (2 * Math.PI);
 
         // === LIMIT TO MAX TURRET ANGLE (avoid cable wrap) ===
         if (desiredTurretOnBotAngleRAD > Math.toRadians(BotPositions.Turret.MAX_ROTATION_DEG)) {
@@ -123,10 +136,13 @@ public class Turret extends SubsystemBase {
         }
 
         // === CONVERT TO TICKS ===
-        desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / BotPositions.Turret.RADIANS_PER_SERVO_POSITION)
-                + manualOffset;
+        desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / BotPositions.Turret.RADIANS_PER_SERVO_POSITION);
 
-        setTargetPosition(desiredTicks);
+
+        if (!TurretTrackingDisabled) {
+            setTargetPosition(desiredTicks);
+        }
+
 
         // === UPDATE GLOBAL DISTANCE ===
         GlobalVariables.distanceFromTarget =

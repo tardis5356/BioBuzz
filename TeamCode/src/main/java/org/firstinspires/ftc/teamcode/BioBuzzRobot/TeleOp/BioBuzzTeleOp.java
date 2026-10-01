@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.BioBuzzRobot.TeleOp;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.AutoTrajectories.savedPose;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables.inAuto;
 
-import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret.targetHive;
-
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing.Constants;
+
 @TeleOp(name = "BioBuzz Teleop")
 public class BioBuzzTeleOp extends CommandOpMode {
     GlobalVariables.AColor aColor;
@@ -34,7 +35,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
     GamepadEx driver1, driver2;
     Follower follower;
-    double FB, LR, Rotation;
+
     double CURRENT_SPEED_MULTIPLIER;
     double FAST_SPEED_MULTIPLIER = 1;
     double SLOW_SPEED_MULTIPLIER = .5;
@@ -56,24 +57,27 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
 
         follower = Constants.create(hardwareMap);
-        if (follower != null) {
+        if (savedPose != null) {
             follower.setPose(savedPose);
+            follower.update();
+        } else {
+            follower.setPose(new Pose(70.75, 70.75, 270));
             follower.update();
         }
         //INTAKE
         Trigger manualIntakeMode = new Trigger(() -> Intake.intakeMode == Intake.IntakeMode.MANUAL);
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.CROSS))
                 .and(manualIntakeMode)
                 .whenActive(new IntakeToggleCommand(intake, Intake.Intake_State.IN));
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.B))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.CIRCLE))
                 .and(manualIntakeMode)
                 .whenActive(new IntakeToggleCommand(intake, Intake.Intake_State.OUT));
 
 
         //SHOOTER
-        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.X))).whenActive(
+        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.SQUARE))).whenActive(
                 new LaunchSequenceCommand(intake, transfer)
         );
         new Trigger(() -> driver2.getRightY() > .1)
@@ -93,17 +97,17 @@ public class BioBuzzTeleOp extends CommandOpMode {
         //Turret
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))
                 .toggleWhenActive(
-                        new InstantCommand(turret::disablePID),
-                        new InstantCommand(() -> turret.enablePID())
+                        new InstantCommand(turret::disableTurretTracking),
+                        new InstantCommand(turret::enableTurretTracking)
                 );
 
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(() -> Turret.manualOffset -= 200);
+                .whenInactive(() -> Turret.manualOffsetDegrees -= 2);
 
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(() -> Turret.manualOffset += 200);
+                .whenInactive(() -> Turret.manualOffsetDegrees += 2);
         //Drive
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(
                         () -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER,
                         () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER
@@ -123,31 +127,27 @@ public class BioBuzzTeleOp extends CommandOpMode {
     }
 
     public void run() {
-        CommandScheduler.getInstance().run();
-        driveRun();
+        super.run();
+        driveRun(gamepad1, follower, CURRENT_SPEED_MULTIPLIER);
         follower.update();
         turret.updateTurretTracking(follower, telemetry);
-        boolean scoring = follower.pose().y() > 72;
 
-        targetHive = (aColor == GlobalVariables.AColor.BLUE)
-                ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
-                : (scoring ? GlobalVariables.TargetHive.RED_SCORING  : GlobalVariables.TargetHive.RED_AUDIENCE);
-
+        savedPose = null;
         telemetry.update();
     }
 
 
-    public void driveRun() {
-        Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75 * CURRENT_SPEED_MULTIPLIER;
-        FB = cubicScaling(gamepad1.left_stick_y) * CURRENT_SPEED_MULTIPLIER;
-        LR = cubicScaling(gamepad1.left_stick_x) * 1.2 * CURRENT_SPEED_MULTIPLIER;
+    public static void driveRun(Gamepad gamepad1, Follower follower, double CURRENT_SPEED_MULTIPLIER) {
+       double Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75 * CURRENT_SPEED_MULTIPLIER;
+        double FB = cubicScaling(gamepad1.left_stick_y) * CURRENT_SPEED_MULTIPLIER;
+        double LR = cubicScaling(gamepad1.left_stick_x) * 1.2 * CURRENT_SPEED_MULTIPLIER;
 
-       follower.manual(FB, LR, Rotation);
+        follower.manual(FB, LR, Rotation);
 
 
     }
 
-    private double cubicScaling(float joystickValue) {
+    private static double cubicScaling(float joystickValue) {
         //store 5% of the joystick value + 95% of the joystick value to the 3rd power
         double v = 0.05 * joystickValue + 0.95 * Math.pow(joystickValue, 3);
         if (joystickValue > 0.02)
