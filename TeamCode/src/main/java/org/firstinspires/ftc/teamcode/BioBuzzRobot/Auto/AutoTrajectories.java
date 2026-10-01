@@ -6,15 +6,23 @@ import static com.pedropathing.api.Paths.line;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
+import com.pedropathing.math.Vector2D;
 import com.pedropathing.paths.Path;
+import com.pedropathing.paths.curves.Line;
+import com.pedropathing.paths.curves.bezier.BezierCurve;
 import com.pedropathing.paths.interpolator.Interpolator;
 
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class AutoTrajectories {
 
 
-    private static final PoseFactory poseFactory = PoseFactory.degrees();
 
     public static Pose startPose;
     public static Pose savedPose;
@@ -26,39 +34,79 @@ public class AutoTrajectories {
         RED_SCORING,
         BLUE_SCORING
     }
-
     static StartQuadrant startQuadrant;
 
-    private final Pose start = poseFactory.of(78.9113, 133.1298, 90);
-    private final Pose path1 = poseFactory.of(132.0193, 99.2815, -15);
-    private final Pose path1Segment2Start = poseFactory.of(132.0193, 99.2815, -32.5114);
-    private final Pose path1Segment2End = poseFactory.of(132.0193, 99.2815, -15);
-    private final Pose point2 = poseFactory.of(84.0051, 103.6517, -5.2007);
-    private final Pose point3 = poseFactory.of(132.1093, 132.7404, 75.8467);
-    private final Pose point3Control1 = poseFactory.of(126.653, 110.2866, 0);
-    private final Pose point4 = poseFactory.of(83.2357, 34.6343, 94.0991);
-    private final Pose point4Control1 = poseFactory.of(71.2314, 134.2414, 0);
-    private final Pose point4Control2 = poseFactory.of(82.7857, 41.5729, 0);
-    private final Pose point5 = poseFactory.of(89.3229, 11.4857, 104.7329);
 
-    public Path path1() {
-        return line(start, path1).heading(Interpolator.piecewise().until(0.5, Interpolator.tangent).until(1, Interpolator.linear(path1Segment2Start, path1Segment2End)));
+    //PASTE FROM HERE
+    private static final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose gardenStart = poseFactory.of(78.9113, 133.1298, 90);
+    private final Pose gardenStartToAllianceFlower = poseFactory.of(132.0193, 99.2815, -15);
+    private final Pose gardenStartToAllianceFlowerSegment2Start = poseFactory.of(132.0193, 99.2815, -32.5114);
+    private final Pose gardenStartToAllianceFlowerSegment2End = poseFactory.of(132.0193, 99.2815, -15);
+    private final Pose allianceFlowerToGarden = poseFactory.of(132.3843, 130.2057, -90.6763);
+    private final Pose gardenToLZFlower = poseFactory.of(89.3014, 10.2419, 106.7055);
+    private final Pose gardenToLZFlowerControl1 = poseFactory.of(67.84, 136.4643, 0);
+    private final Pose gardenToLZFlowerControl2 = poseFactory.of(80.6032, 38.6628, 0);
+    private final Pose lZFlowerToLZ = poseFactory.of(121.3117, 29.8846, -148.4652);
+
+    public Path gardenStartToAllianceFlower() {
+        return line(gardenStart, gardenStartToAllianceFlower).heading(Interpolator.piecewise().until(0.8433, Interpolator.tangent).until(1, Interpolator.linear(gardenStartToAllianceFlowerSegment2Start, gardenStartToAllianceFlowerSegment2End)));
     }
 
-    public Path path2() {
-        return line(path1, point2).reverseTangent();
+    public Path allianceFlowerToGarden() {
+        return line(gardenStartToAllianceFlower, allianceFlowerToGarden).reverseTangent();
     }
 
-    public Path path3() {
-        return curve(point2, point3Control1, point3).tangent();
+    public Path gardenToLZFlower() {
+        return curve(allianceFlowerToGarden, gardenToLZFlowerControl1, gardenToLZFlowerControl2, gardenToLZFlower).reverseTangent();
     }
 
-    public Path path4() {
-        return curve(point3, point4Control1, point4Control2, point4).reverseTangent();
+    public Path lZFlowerToLZ() {
+        return line(gardenToLZFlower, lZFlowerToLZ).reverseTangent();
     }
 
-    public Path path5() {
-        return line(point4, point5).reverseTangent();
+    public Path reverse(Path originalPath) {
+
+        // 1. Get start and end Poses directly from Path
+        Pose start = originalPath.get(0.0);
+        Pose end   = originalPath.endPose();
+
+        // 2. Reverse geometry
+        Path reversed;
+        if (originalPath.curve instanceof Line) {
+            reversed = line(end, start);
+        } else if (originalPath.curve instanceof BezierCurve) {
+            BezierCurve originalBezier = (BezierCurve) originalPath.curve;
+
+            List<Vector2D> cps = new ArrayList<>(originalBezier.getControlPoints());
+            Collections.reverse(cps);
+
+            reversed = curve(cps.toArray(new Vector2D[0]));
+        } else {
+            throw new IllegalArgumentException("Unsupported curve type: " + originalPath.curve.getClass().getName());
+        }
+
+        // 3. Reverse heading interpolation if originalPath has a heading interpolator
+        if (hasHeading(originalPath)) {
+            reversed.heading((curve, t) -> originalPath.heading(1.0 - t));
+        } else {
+            reversed.reverseTangent();
+        }
+
+        return reversed;
+    }
+
+    public static boolean hasHeading(Path path) {
+        if (path == null) return false;
+        try {
+            Method method = Path.class.getDeclaredMethod("hasHeading");
+            method.setAccessible(true);
+            Boolean result = (Boolean) method.invoke(path);
+            return Boolean.TRUE.equals(result);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static void generateTrajectories(Follower follower) {

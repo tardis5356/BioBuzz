@@ -6,15 +6,16 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 
 import java.util.Map;
-
+import com.bylazar.configurables.annotations.Configurable;
+@Configurable
 public final class BotPositions {
     public static final class Turret {
-        public static final double TOTAL_DEGREES = 401.710526316;
+        public static final double TOTAL_DEGREES = 430.303030303;
         public static final double TOTAL_RADIANS = Math.toRadians(TOTAL_DEGREES);
         public static final double RADIANS_PER_SERVO_POSITION = TOTAL_RADIANS;
         public static final double SERVO_POSITION_PER_DEGREE = 1.0 / TOTAL_DEGREES;
         public static final double OFFSET_X = 0.0;
-        public static final double OFFSET_Y = 0.0;
+        public static final double OFFSET_Y = 0.0;//Front Camera
         public static final double MAX_ROTATION_DEG = TOTAL_DEGREES / 2.0;
     }
 
@@ -84,12 +85,6 @@ public final class BotPositions {
         // === Tracking Parameters ===
         public static final double MAX_ASSOCIATION_DIST = 80.0;
         public static final int MAX_MISSED_FRAMES = 10;
-    }
-    public static final class Ramp {
-        public static double
-                FRONT = 0,
-                BACK = 0,
-                RETRACT = 0;
     }
 
     public static final class Hive {

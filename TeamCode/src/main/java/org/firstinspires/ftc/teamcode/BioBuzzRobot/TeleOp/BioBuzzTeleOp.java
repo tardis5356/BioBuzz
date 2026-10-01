@@ -2,14 +2,12 @@ package org.firstinspires.ftc.teamcode.BioBuzzRobot.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.AutoTrajectories.savedPose;
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables.inAuto;
-import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake.intake_State;
-import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp.rampState;
+
 import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret.targetHive;
 
 
 import com.pedropathing.follower.Follower;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -19,22 +17,20 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.LaunchSequenceCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.RampToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;
+
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing.Constants;
-
+@TeleOp(name = "BioBuzz Teleop")
 public class BioBuzzTeleOp extends CommandOpMode {
     GlobalVariables.AColor aColor;
     Intake intake;
     Turret turret;
     Shooter shooter;
     Transfer transfer;
-    Ramp ramp;
 
     GamepadEx driver1, driver2;
     Follower follower;
@@ -42,8 +38,6 @@ public class BioBuzzTeleOp extends CommandOpMode {
     double CURRENT_SPEED_MULTIPLIER;
     double FAST_SPEED_MULTIPLIER = 1;
     double SLOW_SPEED_MULTIPLIER = .5;
-
-    double mFLPower, mFRPower, mBLPower, mBRPower;
 
     @Override
     public void initialize() {
@@ -54,7 +48,6 @@ public class BioBuzzTeleOp extends CommandOpMode {
         shooter = new Shooter(hardwareMap);
         transfer = new Transfer(hardwareMap);
         turret = new Turret(hardwareMap);
-        ramp = new Ramp(hardwareMap);
         CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
         shooter.spinning = true;
 
@@ -78,12 +71,6 @@ public class BioBuzzTeleOp extends CommandOpMode {
                 .and(manualIntakeMode)
                 .whenActive(new IntakeToggleCommand(intake, Intake.Intake_State.OUT));
 
-        //RAMP
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.FRONT));
-
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
-                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.BACK));
 
         //SHOOTER
         new Trigger(() -> (driver1.getButton(GamepadKeys.Button.X))).whenActive(
@@ -145,6 +132,8 @@ public class BioBuzzTeleOp extends CommandOpMode {
         targetHive = (aColor == GlobalVariables.AColor.BLUE)
                 ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
                 : (scoring ? GlobalVariables.TargetHive.RED_SCORING  : GlobalVariables.TargetHive.RED_AUDIENCE);
+
+        telemetry.update();
     }
 
 

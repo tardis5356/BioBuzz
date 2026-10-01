@@ -9,17 +9,17 @@ import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 
 public class LaunchSequenceCommand extends SequentialCommandGroup {
-    public LaunchSequenceCommand(Intake intake, Transfer storage) {
+    public LaunchSequenceCommand(Intake intake, Transfer transfer) {
         addCommands(
                 //TODO Check the waits and sequence
                 new SequentialCommandGroup(
-                        new InstantCommand(storage::openGate),
+                        new InstantCommand(transfer::openGate),
                         new InstantCommand(intake::stop),
                         new WaitCommand(200),
                         new InstantCommand(() -> Shooter.bangBangActive = true),
                         new InstantCommand(intake::in),
                         new WaitCommand(450),
-                        new InstantCommand(storage::closeGate),
+                        new InstantCommand(transfer::closeGate),
                         new InstantCommand(intake::stop),
                         new InstantCommand(() -> Shooter.bangBangActive = false)
                 )
