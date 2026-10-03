@@ -14,6 +14,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret;
@@ -30,6 +31,8 @@ public class BioBuzzAuto extends OpMode {
     private Shooter shooter;
     private Transfer transfer;
     private Camera camera;
+    private Ramp ramp;
+
     private GlobalVariables.AColor aColor;
     //Decision tree
     //AColor, StartPos, Intake Where?, Shoot Where?, Travel,
@@ -48,6 +51,8 @@ public class BioBuzzAuto extends OpMode {
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
         transfer = new Transfer(hardwareMap);
+   //     camera = new Camera(hardwareMap);
+        ramp = new Ramp(hardwareMap);
 
     }
 
@@ -55,7 +60,7 @@ public class BioBuzzAuto extends OpMode {
     public void init_loop() {
 
 
-        follower.setPose(startPose);
+
         handleInput();
         printEASITelemetry();
 
@@ -96,13 +101,15 @@ public class BioBuzzAuto extends OpMode {
     public void start() {
 
         AutoTrajectories.generateTrajectories(follower);
+        follower.setPose(startPose);
         SequentialCommandGroup auto = AutoGenerator.buildAuto(
                 follower,
                 intake,
                 turret,
                 shooter,
                 transfer,
-                camera
+                camera,
+                ramp
         );
         CommandScheduler.getInstance().schedule(
                 auto

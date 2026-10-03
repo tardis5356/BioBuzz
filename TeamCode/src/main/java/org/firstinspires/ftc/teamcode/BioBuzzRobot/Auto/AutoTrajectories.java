@@ -15,9 +15,7 @@ import com.pedropathing.paths.interpolator.Interpolator;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AutoTrajectories {
@@ -37,34 +35,35 @@ public class AutoTrajectories {
     static StartQuadrant startQuadrant;
 
 
-    //PASTE FROM HERE
     private static final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose gardenStart = poseFactory.of(78.9113, 133.1298, 90);
-    private final Pose gardenStartToAllianceFlower = poseFactory.of(132.0193, 99.2815, -15);
-    private final Pose gardenStartToAllianceFlowerSegment2Start = poseFactory.of(132.0193, 99.2815, -32.5114);
-    private final Pose gardenStartToAllianceFlowerSegment2End = poseFactory.of(132.0193, 99.2815, -15);
-    private final Pose allianceFlowerToGarden = poseFactory.of(132.3843, 130.2057, -90.6763);
-    private final Pose gardenToLZFlower = poseFactory.of(89.3014, 10.2419, 106.7055);
-    private final Pose gardenToLZFlowerControl1 = poseFactory.of(67.84, 136.4643, 0);
-    private final Pose gardenToLZFlowerControl2 = poseFactory.of(80.6032, 38.6628, 0);
-    private final Pose lZFlowerToLZ = poseFactory.of(121.3117, 29.8846, -148.4652);
 
-    public Path gardenStartToAllianceFlower() {
-        return line(gardenStart, gardenStartToAllianceFlower).heading(Interpolator.piecewise().until(0.8433, Interpolator.tangent).until(1, Interpolator.linear(gardenStartToAllianceFlowerSegment2Start, gardenStartToAllianceFlowerSegment2End)));
+    public static final Pose gardenStart = poseFactory.of(109.3, 133.2, 90);
+    public static final Pose gardenIntake = poseFactory.of(133, 133.2, 0);
+    public static final Pose LZFlower = poseFactory.of(88.8971, 11.0505, 106.4954);
+    public static final Pose gardenToLZFlowerInsideControl1 = poseFactory.of(64, 133.4, 0);
+    public static final Pose gardenToLZFlowerInsideControl2 = poseFactory.of(80.6032, 38.6628, 0);
+    public static final Pose gardenToLZFlowerOutsideControl1 = poseFactory.of(87.2457, 113.0157, 0);
+    public static final Pose gardenToLZFlowerOutsideControl2 = poseFactory.of(122.6489, 26.13, 0);
+    public static final Pose gardenToLZFlowerOutsideSegment2Start = poseFactory.of(88.8971, 11.0505, 80.5637);
+    public static final Pose gardenToLZFlowerOutsideSegment2End = poseFactory.of(88.8971, 11.0505, 105);
+
+
+
+    //Garden Start Paths
+    public static Path gardenIntakeToLZFlowerInside() {
+        return curve(gardenIntake, gardenToLZFlowerInsideControl1, gardenToLZFlowerInsideControl2, LZFlower).reverseTangent();
+    }
+    public static Path gardenStartToGardenIntake() {
+        return line(gardenStart, gardenIntake).tangent();
+    }
+    public static Path gardenIntakeToLZFlowerOutside() {
+        return curve(gardenIntake, gardenToLZFlowerOutsideControl1, gardenToLZFlowerOutsideControl2, LZFlower).heading(Interpolator.piecewise().until(0.77, Interpolator.tangent.reverse()).until(1, Interpolator.linear(gardenToLZFlowerOutsideSegment2Start, gardenToLZFlowerOutsideSegment2End)));
     }
 
-    public Path allianceFlowerToGarden() {
-        return line(gardenStartToAllianceFlower, allianceFlowerToGarden).reverseTangent();
-    }
+    //Flower Start Paths
 
-    public Path gardenToLZFlower() {
-        return curve(allianceFlowerToGarden, gardenToLZFlowerControl1, gardenToLZFlowerControl2, gardenToLZFlower).reverseTangent();
-    }
 
-    public Path lZFlowerToLZ() {
-        return line(gardenToLZFlower, lZFlowerToLZ).reverseTangent();
-    }
 
     public Path reverse(Path originalPath) {
 
@@ -77,14 +76,28 @@ public class AutoTrajectories {
         Path reversed;
         if (originalPath.curve instanceof Line) {
             reversed = line(end, start);
-        } else if (originalPath.curve instanceof BezierCurve) {
-            BezierCurve originalBezier = (BezierCurve) originalPath.curve;
+        }else if (originalPath.curve instanceof BezierCurve) {
+                BezierCurve originalBezier = (BezierCurve) originalPath.curve;
+                List<Vector2D> originalCps = originalBezier.getControlPoints();
 
-            List<Vector2D> cps = new ArrayList<>(originalBezier.getControlPoints());
-            Collections.reverse(cps);
+                // 1. Create list of Poses for the reversed curve
+                List<Pose> cpsPoses = new ArrayList<>();
 
-            reversed = curve(cps.toArray(new Vector2D[0]));
-        } else {
+                // First element: start Pose of reversed path (original endPose)
+                cpsPoses.add(end);
+
+                // Middle elements: intermediate control points in reverse order
+                for (int i = originalCps.size() - 2; i >= 1; i--) {
+                    Vector2D pt = originalCps.get(i);
+                    cpsPoses.add(new Pose(pt.x(), pt.y(), 0));
+                }
+
+                // Last element: end Pose of reversed path (original startPose)
+                cpsPoses.add(start);
+
+                // 2. Create reversed Path using array of Poses
+                reversed = curve(cpsPoses.toArray(new Pose[0]));
+            } else {
             throw new IllegalArgumentException("Unsupported curve type: " + originalPath.curve.getClass().getName());
         }
 

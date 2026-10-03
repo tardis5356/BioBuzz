@@ -49,6 +49,14 @@ public final class BotPositions {
         public static double OPEN = 0, CLOSE = 0;
     }
 
+    public static final class Ramp {
+        public static double
+                FRONT = 1,
+                BACK = 0,
+                RETRACT = .5;
+    }
+
+
     public static final class Camera {
 
         // === Physical Mounting Geometry ===

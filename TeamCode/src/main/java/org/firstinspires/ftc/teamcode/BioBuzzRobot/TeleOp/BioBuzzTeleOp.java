@@ -17,9 +17,11 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.LaunchSequenceCommand;
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.RampToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
 
+import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Turret;
@@ -32,6 +34,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
     Turret turret;
     Shooter shooter;
     Transfer transfer;
+    Ramp ramp;
 
     GamepadEx driver1, driver2;
     Follower follower;
@@ -49,6 +52,8 @@ public class BioBuzzTeleOp extends CommandOpMode {
         shooter = new Shooter(hardwareMap);
         transfer = new Transfer(hardwareMap);
         turret = new Turret(hardwareMap);
+        ramp = new Ramp(hardwareMap);
+
         CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
         shooter.spinning = true;
 
@@ -93,6 +98,13 @@ public class BioBuzzTeleOp extends CommandOpMode {
                 .whenInactive(() -> shooter.hoodOffset -= .02);
 
         //Camera
+
+        //Ramp
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
+                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.FRONT));
+
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
+                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.BACK));
 
         //Turret
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))
