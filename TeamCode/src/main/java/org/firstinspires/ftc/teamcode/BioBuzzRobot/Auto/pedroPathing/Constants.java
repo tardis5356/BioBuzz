@@ -43,7 +43,7 @@ public class Constants {
             c -> {
                 Controller primaryTranslationalForward = Controller.proportional(0.17036584794092324); // rough adjustment
                 Controller secondaryTranslationalForward = Controller.proportional(0.085);//0.063 // fine adjustment
-                Controller primaryTranslationalLateral = Controller.proportional(16);
+                Controller primaryTranslationalLateral = Controller.proportional(15);
                 Controller secondaryTranslationalLateral = Controller.proportional(1);//6.0848
 
                 c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward)); //primary will switch into secondary within 2.5 inches
