@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto;
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 
+import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.BioBuzzAuto.StartChoice.GARDEN;
+
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -24,7 +26,7 @@ public class AutoTrajectories {
 
     public static Pose startPose;
     public static Pose savedPose;
-    GlobalVariables.AColor aColor;
+    public static GlobalVariables.AColor aColor;
 
     public enum StartQuadrant {
         RED_AUDIENCE,
@@ -37,6 +39,13 @@ public class AutoTrajectories {
 
     private static final PoseFactory poseFactory = PoseFactory.degrees();
 
+
+    public static final Pose loadingZoneStart = poseFactory.of(128.1, 8.82, 90);
+    public static final Pose Park = poseFactory.of(133.2186, 38.0214, 90);
+
+    public static Path loadingZoneStartToPark() {
+        return line(loadingZoneStart, Park).constant(Park);
+    }
 
     public static final Pose gardenStart = poseFactory.of(109.3, 133.2, 90);
     public static final Pose gardenIntake = poseFactory.of(133, 133.2, 0);
@@ -123,20 +132,37 @@ public class AutoTrajectories {
         }
     }
 
-    public static void generateTrajectories(Follower follower) {
+    public static void generateTrajectories(Follower follower, BioBuzzAuto.StartChoice startChoice) {
 
-        switch (startQuadrant) {
-            case RED_SCORING:
-            case RED_AUDIENCE:
-                poseFactory.mirrorY(70.75);
-                poseFactory.mirrorX(70.75);
-                break;
-            case BLUE_SCORING:
-                break;
-            //the default is BLUE_AUDIENCE
-            case BLUE_AUDIENCE:
-                break;
-        }
+      if (aColor == GlobalVariables.AColor.BLUE){
+          poseFactory.mirrorY(70.75);
+          poseFactory.mirrorX(70.75);
+      }
+
+      switch(startChoice) {
+          case GARDEN:
+              startPose = gardenStart;
+              follower.setPose(startPose);
+              follower.update();
+              break;
+          case LOADING_ZONE_PARK:
+              startPose = loadingZoneStart;
+              follower.setPose(startPose);
+              follower.update();
+              break;
+
+          default:
+              throw new IllegalArgumentException("Invalid StartChoice: " + startChoice);
+              //          case ALLIANCE_FLOWER:
+//              startPose = ;
+//              follower.setPose(startPose);
+//              follower.update();
+//              break;
+
+      }
+
+
+
 
 
 

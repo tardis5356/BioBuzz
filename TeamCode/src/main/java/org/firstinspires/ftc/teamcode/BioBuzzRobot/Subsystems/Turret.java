@@ -22,7 +22,7 @@ public class Turret extends SubsystemBase {
 
     public static int manualOffsetDegrees = 0;
 
-    public static int desiredTicks;
+    public static double desiredTicks;
     private static double targetPosition;
 
     GlobalVariables.AColor aColor;
@@ -136,7 +136,7 @@ public class Turret extends SubsystemBase {
         }
 
         // === CONVERT TO TICKS ===
-        desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / BotPositions.Turret.RADIANS_PER_SERVO_POSITION);
+        desiredTicks = (desiredTurretOnBotAngleRAD / BotPositions.Turret.RADIANS_PER_SERVO_POSITION) +.5;//+.5 to account for the 0 position being straight
 
 
         if (!TurretTrackingDisabled) {
@@ -150,13 +150,7 @@ public class Turret extends SubsystemBase {
 
         // === TELEMETRY ===
         telemetry.addData("Desired Turret On Field Theta:", desiredFieldTurretAngleRAD);
-        telemetry.addData("Turret Theta (deg) Current Error",
-                "%.2f   %.2f",
-                Math.toDegrees(getTurretThetaRAD()),
-                (getCurrentPosition() - desiredTicks) / SERVO_POSITION_PER_DEGREE);
 
-        telemetry.addData("TurretError",
-                (desiredTicks - getCurrentPosition()) / SERVO_POSITION_PER_DEGREE);
     }
 
 

@@ -35,28 +35,33 @@ public class AutoGenerator {
             Ramp ramp
     ) {
         List<Command> seq = new ArrayList<>();
-        seq.add(new LaunchSequenceCommand(intake, transfer));
-        if (startPose == AutoTrajectories.gardenStart){
-            seq.add(new InstantCommand(intake::in));
-            seq.add(
-                    new ParallelCommandGroup(
-                            new FollowPathCommand(follower, gardenStartToGardenIntake()),
-                            new PathCompletionMarkerCommand(
-                                    new SequentialCommandGroup(
-                                            new InstantCommand(intake::stop),
-                                            new InstantCommand(ramp::deployBack)
-                                    ),
-                                    0.5,
-                                    follower
-                            )
-                    )
-
+       // if (startPose == AutoTrajectories.loadingZoneStart) {
+            return new SequentialCommandGroup(
+                    new FollowPathCommand(follower, AutoTrajectories.loadingZoneStartToPark(), true)
             );
-        }
+     //   }
+//        seq.add(new LaunchSequenceCommand(intake, transfer));
+//        if (startPose == AutoTrajectories.gardenStart){
+//            seq.add(new InstantCommand(intake::in));
+//            seq.add(
+//                    new ParallelCommandGroup(
+//                            new FollowPathCommand(follower, gardenStartToGardenIntake()),
+//                            new PathCompletionMarkerCommand(
+//                                    new SequentialCommandGroup(
+//                                            new InstantCommand(intake::stop),
+//                                            new InstantCommand(ramp::deployBack)
+//                                    ),
+//                                    0.5,
+//                                    follower
+//                            )
+//                    )
+//
+//            );
+//        }
 
 
 
-        return new SequentialCommandGroup(seq.toArray(new Command[0]));
+       // return new SequentialCommandGroup(seq.toArray(new Command[0]));
     }
 
 }

@@ -37,7 +37,13 @@ public class BioBuzzAuto extends OpMode {
     //Decision tree
     //AColor, StartPos, Intake Where?, Shoot Where?, Travel,
 
-    //public static int[][] choices = new int[MAX_CYCLES][2];
+    public enum StartChoice{
+        GARDEN,
+        LOADING_ZONE_PARK,
+        ALLIANCE_FLOWER
+    }
+
+    StartChoice startChoice;
 
 
     @Override
@@ -47,19 +53,17 @@ public class BioBuzzAuto extends OpMode {
         follower = Constants.create(hardwareMap);
 
 
-        turret = new Turret(hardwareMap);
-        intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap);
-        transfer = new Transfer(hardwareMap);
-   //     camera = new Camera(hardwareMap);
-        ramp = new Ramp(hardwareMap);
+//        turret = new Turret(hardwareMap);
+//        intake = new Intake(hardwareMap);
+//        shooter = new Shooter(hardwareMap);
+//        transfer = new Transfer(hardwareMap);
+//   //     camera = new Camera(hardwareMap);
+//        ramp = new Ramp(hardwareMap);
 
     }
 
     @Override
     public void init_loop() {
-
-
 
         handleInput();
         printEASITelemetry();
@@ -74,34 +78,38 @@ public class BioBuzzAuto extends OpMode {
         if (gamepad2.b) aColor = GlobalVariables.AColor.RED;
 
         // 2. Position Selection
-        if (gamepad2.dpad_up)   audienceStartPos = true;
-        if (gamepad2.dpad_down) audienceStartPos = false;
+        if (gamepad2.dpad_up)    startChoice = StartChoice.GARDEN;
+        if (gamepad2.dpad_right) startChoice = StartChoice.ALLIANCE_FLOWER;
+        if (gamepad2.dpad_down)  startChoice = StartChoice.LOADING_ZONE_PARK;
 
-        // 3. Resolve Quadrant
-        startQuadrant = updateQuadrant(aColor, audienceStartPos);
+//        // 3. Resolve Quadrant
+//        startQuadrant = updateQuadrant(aColor, audienceStartPos);
     }
 
-    private AutoTrajectories.StartQuadrant updateQuadrant(GlobalVariables.AColor color, boolean scoring) {
-        if (color == GlobalVariables.AColor.BLUE) {
-            return scoring ? AutoTrajectories.StartQuadrant.BLUE_SCORING
-                    : AutoTrajectories.StartQuadrant.BLUE_AUDIENCE;
-        } else {
-            return scoring ? AutoTrajectories.StartQuadrant.RED_SCORING
-                    : AutoTrajectories.StartQuadrant.RED_AUDIENCE;
-        }
-    }
+//    private AutoTrajectories.StartQuadrant updateQuadrant(GlobalVariables.AColor color, boolean scoring) {
+//        if (color == GlobalVariables.AColor.BLUE) {
+//            return scoring ? AutoTrajectories.StartQuadrant.BLUE_SCORING
+//                    : AutoTrajectories.StartQuadrant.BLUE_AUDIENCE;
+//        } else {
+//            return scoring ? AutoTrajectories.StartQuadrant.RED_SCORING
+//                    : AutoTrajectories.StartQuadrant.RED_AUDIENCE;
+//        }
+//    }
 
     private void printEASITelemetry() {
         telemetry.addData("StartingQuadrant", startQuadrant);
         telemetry.addData("AllianceColor", aColor);
+        telemetry.addLine("IsWorking");
         telemetry.update();
     }
 
     @Override
     public void start() {
 
-        AutoTrajectories.generateTrajectories(follower);
+        AutoTrajectories.generateTrajectories(follower, startChoice);
+        startPose = AutoTrajectories.loadingZoneStart;
         follower.setPose(startPose);
+        follower.update();
         SequentialCommandGroup auto = AutoGenerator.buildAuto(
                 follower,
                 intake,
@@ -120,7 +128,7 @@ public class BioBuzzAuto extends OpMode {
     public void loop() {
         CommandScheduler.getInstance().run();
         follower.update();
-        turret.updateTurretTracking(follower, telemetry);
+        //turret.updateTurretTracking(follower, telemetry);
 
         AutoTrajectories.savedPose = follower.pose();
 
