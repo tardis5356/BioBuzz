@@ -21,7 +21,7 @@ public class Shooter extends SubsystemBase {
     PIDController velPIDController = new PIDController(BotPositions.Shooter.KP, BotPositions.Shooter.KI, BotPositions.Shooter.KD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(BotPositions.Shooter.KS, 0);
 
-    public DcMotorEx mSR, mSL;
+    public DcMotorEx mST, mSB;
     public Servo sH;
     public static boolean bangBangActive;
     InterpolatingDoubleTreeMap HoodRegression = new InterpolatingDoubleTreeMap();
@@ -54,16 +54,16 @@ public class Shooter extends SubsystemBase {
         time.reset();
 
 
-        mSR = hardwareMap.get(DcMotorEx.class, "mSR");
-        mSL = hardwareMap.get(DcMotorEx.class, "mSL");
+        mST = hardwareMap.get(DcMotorEx.class, "mST");
+        mSB = hardwareMap.get(DcMotorEx.class, "mSB");
 
-        mSR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        mSL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        mST.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        mSB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         sH = hardwareMap.get(Servo.class, "sH");
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        mSL.setDirection(DcMotorSimple.Direction.REVERSE);
+        mSB.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         //Hood and wheel points/data
@@ -110,12 +110,12 @@ public class Shooter extends SubsystemBase {
                     ? calculateBangBangFlyWheelPower(flywheelTarget)
                     : calculatePIDFlyWheelPower(flywheelTarget);
 
-            mSL.setPower(power);
-            mSR.setPower(power);
+            mSB.setPower(power);
+            mST.setPower(power);
 
         } else {
-            mSL.setPower(0);
-            mSR.setPower(0);
+            mSB.setPower(0);
+            mST.setPower(0);
         }
 
     }
@@ -135,7 +135,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getFlyWheelSpeed() {
-        return mSR.getVelocity();
+        return mST.getVelocity();
     }
 
     public void setTargetDistance(double d) {

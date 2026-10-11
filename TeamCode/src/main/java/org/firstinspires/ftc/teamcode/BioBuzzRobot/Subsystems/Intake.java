@@ -11,57 +11,62 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
-    public static Intake_State intake_State =  Intake_State.STOP;
-
     public enum Intake_State { IN, STOP, OUT }
+    public enum IntakeMode { MANUAL, AUTO }
 
-    public enum IntakeMode {
-        MANUAL,
-        AUTO
-    }
+    public static Intake_State intake_State = Intake_State.STOP;
     public static IntakeMode intakeMode = IntakeMode.MANUAL;
 
+    private DcMotorEx mIF, mIB;
+    private DcMotorEx[] intakeMotors;
 
-    private DcMotorEx mI;
-    private DigitalChannel[] intake_BeamBreaks;
+    private DigitalChannel[] beamBreaks;
+    private boolean[] latched;
+    private long[] lastBroken;
+
+    private static final long CLEAR_TIME_MS = 75;
 
     private final ElapsedTime bbOverflowTimer = new ElapsedTime();
 
-
     public Intake(HardwareMap hardwareMap) {
 
-        mI = hardwareMap.get(DcMotorEx.class, "mI");
-        mI.setDirection(DcMotorSimple.Direction.FORWARD);
+        mIF = hardwareMap.get(DcMotorEx.class, "mIF");
+        mIB = hardwareMap.get(DcMotorEx.class, "mIB");
+
+        mIF.setDirection(DcMotorSimple.Direction.REVERSE);
+        mIB.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        intakeMotors = new DcMotorEx[]{mIF, mIB};
 
         DigitalChannel bb1 = hardwareMap.get(DigitalChannel.class, "bb1");
         DigitalChannel bb2 = hardwareMap.get(DigitalChannel.class, "bb2");
         DigitalChannel bb3 = hardwareMap.get(DigitalChannel.class, "bb3");
         DigitalChannel bb4 = hardwareMap.get(DigitalChannel.class, "bb4");
 
-        bb1.setMode(DigitalChannel.Mode.INPUT);
-        bb2.setMode(DigitalChannel.Mode.INPUT);
-        bb3.setMode(DigitalChannel.Mode.INPUT);
-        bb4.setMode(DigitalChannel.Mode.INPUT);
+        beamBreaks = new DigitalChannel[]{bb1, bb2, bb3, bb4};
 
-        intake_BeamBreaks = new DigitalChannel[]{bb1, bb2, bb3, bb4};
+        for (DigitalChannel bb : beamBreaks) {
+            bb.setMode(DigitalChannel.Mode.INPUT);
+        }
+
+        latched = new boolean[beamBreaks.length];
+        lastBroken = new long[beamBreaks.length];
+
         stop();
     }
 
     @Override
     public void periodic() {
 
-        // Count balls
         int bbBallCount = 0;
-        for (DigitalChannel bb : intake_BeamBreaks) {
-            if (bb.getState()) bbBallCount++;
+        for (int i = 0; i < beamBreaks.length; i++) {
+            if (getBeamBreakState(i)) bbBallCount++;
         }
 
-        // Overflow logic
         if (bbBallCount <= 2) {
             bbOverflowTimer.reset();
         }
 
-        // Overflow action
         if (intakeMode == IntakeMode.MANUAL && bbOverflowTimer.seconds() > 0.5) {
             enableAuto();
             out();
@@ -70,23 +75,43 @@ public class Intake extends SubsystemBase {
             disableAuto();
             stop();
         }
+    }
 
+    private boolean getBeamBreakState(int index) {
+        long now = System.currentTimeMillis();
+        boolean broken = !beamBreaks[index].getState(); // false = broken
+
+        if (broken) {
+            latched[index] = true;
+            lastBroken[index] = now;
+        } else if (latched[index] && now - lastBroken[index] > CLEAR_TIME_MS) {
+            latched[index] = false;
+        }
+
+        return latched[index];
+    }
+
+    public void setIntakePower(double power) {
+        for (DcMotorEx m : intakeMotors) {
+            m.setPower(power);
+        }
     }
 
     public void in() {
-        mI.setPower(BotPositions.Intake.INTAKE_POWER);
+        setIntakePower(BotPositions.Intake.INTAKE_POWER);
         intake_State = Intake_State.IN;
     }
 
     public void out() {
-        mI.setPower(BotPositions.Intake.OUTTAKE_POWER);
+        setIntakePower(BotPositions.Intake.OUTTAKE_POWER);
         intake_State = Intake_State.OUT;
     }
 
     public void stop() {
-        mI.setPower(0);
+        setIntakePower(0);
         intake_State = Intake_State.STOP;
     }
+
     public void enableAuto() {
         intakeMode = IntakeMode.AUTO;
     }
@@ -95,4 +120,5 @@ public class Intake extends SubsystemBase {
         intakeMode = IntakeMode.MANUAL;
     }
 }
+
 

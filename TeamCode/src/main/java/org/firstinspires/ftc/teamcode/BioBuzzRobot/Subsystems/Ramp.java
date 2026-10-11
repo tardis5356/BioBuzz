@@ -23,15 +23,11 @@ public class Ramp extends SubsystemBase {
 
     }
 
-    public void deployFront() {
+    public void deploy() {
         sR.setPosition(BotPositions.Ramp.FRONT);
         rampState = Ramp_State.FRONT;
     }
 
-    public void deployBack() {
-        sR.setPosition(BotPositions.Ramp.BACK);
-        rampState = Ramp_State.BACK;
-    }
 
     public void retract() {
         sR.setPosition(BotPositions.Ramp.RETRACT);

@@ -17,7 +17,6 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.LaunchSequenceCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.RampToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
 
@@ -82,9 +81,9 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
 
         //SHOOTER
-        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.SQUARE))).whenActive(
-                new LaunchSequenceCommand(intake, transfer)
-        );
+        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.SQUARE)))
+                .whenActive(new LaunchSequenceCommand(intake, transfer));
+
         new Trigger(() -> driver2.getRightY() > .1)
                 .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset -= 25));
 
@@ -101,10 +100,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
         //Ramp
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.FRONT));
-
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
-                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.BACK));
+                .toggleWhenActive(new InstantCommand(ramp::deploy), new InstantCommand(ramp::retract));
 
         //Turret
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))

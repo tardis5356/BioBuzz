@@ -14,8 +14,6 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.IntakeToggleCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.RampToggleCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;
@@ -60,6 +58,7 @@ public class IndexTeleOp extends CommandOpMode {
 
         turret.disableTurretTracking();
         follower.setPose(new Pose(70.75, 70.75, 270));
+        Turret.setTargetPosition(0.5);
         follower.update();
 
         //INTAKE
@@ -89,7 +88,7 @@ public class IndexTeleOp extends CommandOpMode {
         new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
                 .toggleWhenActive(
                         new InstantCommand(() -> Turret.setTargetPosition(0)),
-                        new InstantCommand(() -> Turret.setTargetPosition(180* BotPositions.Turret.SERVO_POSITION_PER_DEGREE))
+                        new InstantCommand(() -> Turret.setTargetPosition(.5))
                 );
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
@@ -112,10 +111,8 @@ public class IndexTeleOp extends CommandOpMode {
 
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.FRONT));
+                .toggleWhenActive(new InstantCommand(ramp::deploy), new InstantCommand(ramp::retract));
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
-                .whenActive(new RampToggleCommand(ramp, Ramp.Ramp_State.BACK));
 
         telemetry.clearAll();
         telemetry.addLine("Ready To Go");

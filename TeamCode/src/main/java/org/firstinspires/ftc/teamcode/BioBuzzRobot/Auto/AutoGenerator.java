@@ -1,18 +1,10 @@
 package org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto;
 
-import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.AutoTrajectories.gardenStartToGardenIntake;
-import static org.firstinspires.ftc.teamcode.BioBuzzRobot.Auto.AutoTrajectories.startPose;
-
 import com.pedropathing.follower.Follower;
 import com.seattlesolvers.solverslib.command.Command;
-import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.LaunchSequenceCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.PathCompletionMarkerCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzRobot.Commands.RampToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.BioBuzzRobot.Subsystems.Ramp;

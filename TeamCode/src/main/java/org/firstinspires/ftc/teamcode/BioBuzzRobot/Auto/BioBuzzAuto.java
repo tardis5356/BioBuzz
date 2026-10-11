@@ -97,7 +97,7 @@ public class BioBuzzAuto extends OpMode {
 //    }
 
     private void printEASITelemetry() {
-        telemetry.addData("StartingQuadrant", startQuadrant);
+        telemetry.addData("StartChoice", startChoice);
         telemetry.addData("AllianceColor", aColor);
         telemetry.addLine("IsWorking");
         telemetry.update();
