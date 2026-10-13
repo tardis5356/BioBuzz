@@ -54,7 +54,6 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
-
         setTurretServoPosition(getTargetPosition());
     }
 
@@ -95,7 +94,7 @@ public class Turret extends SubsystemBase {
 
     public void updateTurretTracking(Follower follower, Telemetry telemetry) {
 
-        boolean scoring = follower.pose().y() > 72;
+        boolean scoring = follower.pose().y() > 70.75;
 
         targetHive = (aColor == GlobalVariables.AColor.BLUE)
                 ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
@@ -138,6 +137,8 @@ public class Turret extends SubsystemBase {
 
         if (!TurretTrackingDisabled) {
             setTargetPosition(desiredTicks);
+        } else {
+            setTargetPosition(.5);
         }
 
 

@@ -32,13 +32,29 @@ public class BioBuzzAuto extends OpMode {
     private Ramp ramp;
 
     private GlobalVariables.AColor aColor;
-    //Decision tree
-    //AColor, StartPos, Intake Where?, Shoot Where?, Travel,
 
-    public enum StartChoice{
-        GARDEN,
-        LOADING_ZONE_PARK,
-        ALLIANCE_FLOWER
+    public enum StartChoice {
+        GARDEN(0),
+        LOADING_ZONE_PARK(1),
+        ALLIANCE_FLOWER(2);
+
+        private static final StartChoice[] VALUES = values();
+        private final int start;
+
+        StartChoice(int start) {
+            this.start = start;
+        }
+
+        public int getChoice() {
+            return start;
+        }
+
+        public static StartChoice fromStartChoice(int start) {
+            if (start >= 0 && start < VALUES.length) {
+                return VALUES[start];
+            }
+            return GARDEN; // Default fallback
+        }
     }
 
     public enum TransitChoice{
@@ -74,8 +90,6 @@ public class BioBuzzAuto extends OpMode {
         printEASITelemetry();
 
     }
-
-     boolean audienceStartPos = false;
 
     private void handleInput() {
         // 1. Color Selection

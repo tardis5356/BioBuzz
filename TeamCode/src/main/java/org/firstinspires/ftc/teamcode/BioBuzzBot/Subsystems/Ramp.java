@@ -8,10 +8,6 @@ public class Ramp extends SubsystemBase {
 
     Servo sR;
 
-    public enum Ramp_State {FRONT, BACK, RETRACTED}
-
-    public static Ramp_State rampState = Ramp_State.RETRACTED;
-
     public Ramp(HardwareMap hardwareMap) {
         sR = hardwareMap.get(Servo.class, "sR");
         retract();
@@ -25,13 +21,11 @@ public class Ramp extends SubsystemBase {
 
     public void deploy() {
         sR.setPosition(BotPositions.Ramp.FRONT);
-        rampState = Ramp_State.FRONT;
     }
 
 
     public void retract() {
         sR.setPosition(BotPositions.Ramp.RETRACT);
-        rampState = Ramp_State.RETRACTED;
     }
 
 }

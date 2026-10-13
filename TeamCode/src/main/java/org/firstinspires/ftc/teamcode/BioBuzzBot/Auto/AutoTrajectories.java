@@ -35,15 +35,15 @@ public class AutoTrajectories {
         return line(loadingZoneStart, Park).constant(Park);
     }
 
-    private final Pose gardenStart = poseFactory.of(133.375, 125.11, 90);
+    private static final Pose gardenStart = poseFactory.of(133.375, 125.11, 90);
 
     private static final Pose gardenIntake = poseFactory.of(133.375, 132.69, 90);
 
-    public Path gardenStartToGardenIntake() {
+    public static Path gardenStartToGardenIntake() {
         return line(gardenStart, gardenIntake).constant(gardenIntake);
     }
 
-    private static final Pose LoadingZoneShoot = poseFactory.of(93.5, 24, -90);
+    private static final Pose loadingZoneShoot = poseFactory.of(93.5, 24, -90);
     private static final Pose gardenIntakeToLoadingZoneShootControl1_Inside = poseFactory.of(78.6157, 130.1729, 0);
     private static final Pose gardenIntakeToLoadingZoneShootControl2_Inside = poseFactory.of(69.4229, 62.1071, 0);
     private static final Pose gardenIntakeToLoadingZoneShootControl1_OutsideTravel = poseFactory.of(84.2757, 124.5129, 0);
@@ -57,6 +57,38 @@ public class AutoTrajectories {
     private static final Pose gardenIntakeToLoadingZoneShootSegment1Heading = poseFactory.of(93.5, 24, 270);
     private static final Pose gardenIntakeToLoadingZoneShootSegment3Start = poseFactory.of(93.5, 24, -77.055);
     private static final Pose gardenIntakeToLoadingZoneShootSegment3End = poseFactory.of(93.5, 24, 270);
+
+
+    private static final Pose allianceFlowerStart = poseFactory.of(133.375, 109.889, 90);
+    private static final Pose allianceFlowerIntake = poseFactory.of(128, 93.5, 180);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl1_OutsidePark = poseFactory.of(119.2643, 65.8143, 0);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl2_OutsidePark = poseFactory.of(140, 54.0214, 0);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl1_OutsideTravel = poseFactory.of(88.1343, 90.0715, 0);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl2_OutsideTravel = poseFactory.of(125.85, 37.0414, 0);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl1_Inside = poseFactory.of(70, 145, 0);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl2_Inside = poseFactory.of(74.5057, 35.02, 0);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootSegment1Heading = poseFactory.of(93.5, 24, 180);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootSegment3Start = poseFactory.of(93.5, 24, -141.2266);
+    private static final Pose allianceFlowerIntakeToLoadingZoneShootSegment3End = poseFactory.of(93.5, 24, 270);
+
+    public static Path allianceFlowerStartToAllianceFlowerIntake() {
+        return line(allianceFlowerStart, allianceFlowerIntake).linear(allianceFlowerStart, allianceFlowerIntake);
+    }
+
+    private static final Pose parkPosition = poseFactory.of(127.6443, 25.2714, -158.7596);
+    private static final Pose loadingZoneFlowerIntakeToParkPositionSegment1Heading = poseFactory.of(127.6443, 25.2714, 270);
+
+    private static final Pose loadingZoneFlowerIntake = poseFactory.of(93.5, 12, -90);
+
+    public static Path loadingZoneShootToLoadingZoneFlowerIntake() {
+        return line(loadingZoneShoot, loadingZoneFlowerIntake).tangent();
+    }
+
+
+    public static Path loadingFlowerIntakeToParkPosition() {
+        return line(loadingZoneFlowerIntake, parkPosition).heading(Interpolator.piecewise().until(0.2401, Interpolator.constant(loadingZoneFlowerIntakeToParkPositionSegment1Heading)).until(1, Interpolator.tangent.reverse()));
+    }
+
 
 
     public Path reverse(Path originalPath) {
@@ -119,31 +151,45 @@ public class AutoTrajectories {
 
     public static Path gardenIntakeToLoadingZoneShoot;
 
+    public static Path allianceFlowerIntakeToLoadingZoneShoot;
+
     public static void generateTrajectories(Follower follower, BioBuzzAuto.StartChoice startChoice, BioBuzzAuto.TransitChoice transitChoice) {
 
-        if (aColor == GlobalVariables.AColor.BLUE) {
+        if (aColor == GlobalVariables.AColor.RED) {
             poseFactory.mirrorY(70.75);
             poseFactory.mirrorX(70.75);
         }
         Pose gardenIntakeToLoadingZoneShootControl1 = null;
         Pose gardenIntakeToLoadingZoneShootControl2 = null;
 
+        Pose allianceFlowerIntakeToLoadingZoneShootControl1 = null;
+        Pose allianceFlowerIntakeToLoadingZoneShootControl2 = null;
+
         switch (transitChoice) {
             case INSIDE:
                 gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_Inside;
                 gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_Inside;
+
+                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_Inside;
+                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_Inside;
                 break;
             case OUTSIDE_TRAVEL:
                 gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_OutsideTravel;
                 gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_OutsideTravel;
+
+                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_OutsideTravel;
+                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_OutsideTravel;
                 break;
             case OUTSIDE_PARK:
                 gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_OutsidePark;
                 gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_OutsidePark;
+
+                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_OutsidePark;
+                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_OutsidePark;
                 break;
         }
         gardenIntakeToLoadingZoneShoot =
-                curve(gardenIntake, gardenIntakeToLoadingZoneShootControl1, gardenIntakeToLoadingZoneShootControl2, LoadingZoneShoot)
+                curve(gardenIntake, gardenIntakeToLoadingZoneShootControl1, gardenIntakeToLoadingZoneShootControl2, loadingZoneShoot)
                         .heading(
                                 Interpolator.piecewise()
                                         .until(0.2, Interpolator.constant(gardenIntakeToLoadingZoneShootSegment1Heading))
@@ -151,28 +197,40 @@ public class AutoTrajectories {
                                         .until(1, Interpolator.linear(gardenIntakeToLoadingZoneShootSegment3Start, gardenIntakeToLoadingZoneShootSegment3End))
                         );
 
+        allianceFlowerIntakeToLoadingZoneShoot =
+             curve(allianceFlowerIntake, allianceFlowerIntakeToLoadingZoneShootControl1, allianceFlowerIntakeToLoadingZoneShootControl2, loadingZoneShoot)
+                     .heading(
+                             Interpolator.piecewise()
+                                     .until(0.2, Interpolator.constant(allianceFlowerIntakeToLoadingZoneShootSegment1Heading))
+                                     .until(0.8, Interpolator.tangent)
+                                     .until(1, Interpolator.linear(allianceFlowerIntakeToLoadingZoneShootSegment3Start, allianceFlowerIntakeToLoadingZoneShootSegment3End)));
 
-//      switch(startChoice) {
-//          case GARDEN:
-//              startPose = gardenStart;
-//              follower.setPose(startPose);
-//              follower.update();
-//              break;
-//          case LOADING_ZONE_PARK:
-//              startPose = loadingZoneStart;
-//              follower.setPose(startPose);
-//              follower.update();
-//              break;
-//
-//          default:
-//              throw new IllegalArgumentException("Invalid StartChoice: " + startChoice);
-//              //          case ALLIANCE_FLOWER:
-////              startPose = ;
-////              follower.setPose(startPose);
-////              follower.update();
-////              break;
-//
-//      }
+
+
+
+      switch(startChoice) {
+          case GARDEN:
+              startPose = gardenStart;
+              follower.setPose(startPose);
+              follower.update();
+              break;
+          case LOADING_ZONE_PARK:
+              startPose = loadingZoneStart;
+              follower.setPose(startPose);
+              follower.update();
+              break;
+          case ALLIANCE_FLOWER:
+              startPose = allianceFlowerStart;
+              follower.setPose(startPose);
+              follower.update();
+              break;
+
+          default:
+              throw new IllegalArgumentException("Invalid StartChoice: " + startChoice);
+      }
+
+
+
 
 
     }

@@ -15,8 +15,8 @@ public final class BotPositions {
         public static final double RADIANS_PER_SERVO_POSITION = TOTAL_RADIANS;
         public static final double SERVO_POSITION_PER_DEGREE = 1.0 / TOTAL_DEGREES;
         public static final double OFFSET_X = 0.0;
-        public static final double OFFSET_Y = 0.0;//Front Camera
-        public static final double MAX_ROTATION_DEG = TOTAL_DEGREES / 2.0;
+        public static final double OFFSET_Y = 0.0;
+        public static final double MAX_ROTATION_DEG = 200;
     }
 
     public static final class Intake {

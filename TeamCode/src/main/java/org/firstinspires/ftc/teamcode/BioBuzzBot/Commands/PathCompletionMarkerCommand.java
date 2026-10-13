@@ -21,8 +21,6 @@ public class PathCompletionMarkerCommand extends CommandBase {
         if (follower.completion() > completionMarker) {
             command.schedule();
         }
-
-
     }
 
 
