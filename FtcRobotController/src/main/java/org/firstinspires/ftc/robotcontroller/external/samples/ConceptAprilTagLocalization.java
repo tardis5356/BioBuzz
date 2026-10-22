@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -67,7 +69,6 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Concept: AprilTag Localization", group = "Concept")
-@Disabled
 public class ConceptAprilTagLocalization extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -132,13 +133,15 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
         // Demonstrate how to add a camera compatibility quirk
         // these can sometimes be needed if a camera behaves poorly.
         // Quirks have no effect unless the camera you are using matches the specified VID/PID
-        CameraCompatibilityManager.getInstance()
-                .addQuirk(
-                        VENDOR_ID_SUNPLUS_INNOVATION_TECHNOLOGY,
-                        PRODUCT_ID_ARDUCAM_OV5648,
-                        CameraCompatibilityManager.Quirk.AVOID_LIB_USB_RESET_DEVICE);
+//        CameraCompatibilityManager.getInstance()
+//                .addQuirk(
+//                        VENDOR_ID_SUNPLUS_INNOVATION_TECHNOLOGY,
+//                        PRODUCT_ID_ARDUCAM_OV5648,
+//                        CameraCompatibilityManager.Quirk.AVOID_LIB_USB_RESET_DEVICE);
 
         initAprilTag();
+
+//
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -173,7 +176,6 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
      * Initialize the AprilTag processor.
      */
     private void initAprilTag() {
-
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
 
@@ -185,7 +187,6 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
                 //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
                 //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
                 .setCameraPose(cameraPosition, cameraOrientation)
-
                 // == CAMERA CALIBRATION ==
                 // If you do not manually specify calibration parameters, the SDK will attempt
                 // to load a predefined calibration for your camera.
@@ -193,7 +194,6 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
                 // ... these parameters are fx, fy, cx, cy.
 
                 .build();
-
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
         // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
@@ -214,18 +214,19 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
         }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(1280, 720));
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableLiveView(true);
+        builder.enableLiveView(true);
 
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
 
         // Choose whether or not LiveView stops if no processors are enabled.
         // If set "true", monitor shows solid orange screen if no processors enabled.
         // If set "false", monitor shows camera view without annotations.
-        //builder.setAutoStopLiveView(false);
+        //TODO Mayhaps comment out 229
+        builder.setAutoStopLiveView(false);
 
         // Set and enable the processor.
         builder.addProcessor(aprilTag);

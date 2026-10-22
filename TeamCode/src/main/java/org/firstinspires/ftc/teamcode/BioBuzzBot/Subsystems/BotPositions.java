@@ -10,7 +10,7 @@ import com.bylazar.configurables.annotations.Configurable;
 @Configurable
 public final class BotPositions {
     public static final class Turret {
-        public static final double TOTAL_DEGREES = 430.303030303;
+        public static final double TOTAL_DEGREES = 516.3636; //430.303030303;
         public static final double TOTAL_RADIANS = Math.toRadians(TOTAL_DEGREES);
         public static final double RADIANS_PER_SERVO_POSITION = TOTAL_RADIANS;
         public static final double SERVO_POSITION_PER_DEGREE = 1.0 / TOTAL_DEGREES;
@@ -60,14 +60,14 @@ public final class BotPositions {
     public static final class Camera {
 
         // === Physical Mounting Geometry ===
-        public static final double HEIGHT_INCHES = 10.0;          // lens height above floor
-        public static final double PITCH_RADIAN = Math.toRadians(15);
-        public static final double Y_OFFSET = 8.0;                // forward/back offset
+        public static final double Z_OFFSET = 5.87;          // lens height above floor
+        public static final double PITCH_RADIAN = Math.toRadians(115);
+        public static final double Y_OFFSET = 8.64;                // forward/back offset
         public static final double X_OFFSET = 0.0;                // left/right offset
 
         // === Optical Properties ===
-        public static final double FOV_HORIZONTAL_RAD = Math.toRadians(70);
-        public static final double FOCAL_LENGTH_PIXELS = 460;     // tuned from calibration
+        public static final double FOV_HORIZONTAL_RAD = Math.toRadians(90);
+        public static final double FOCAL_LENGTH_PIXELS = 460;     // TODO Tune
         public static final double BALL_DIAMETER_INCHES = 2.5;
 
         // === Camera Resolution ===
