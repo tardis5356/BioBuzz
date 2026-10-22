@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariabl
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -21,6 +22,8 @@ import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
 
+
+@TeleOp(name="IndexTeleOp", group="Test")
 public class IndexTeleOp extends CommandOpMode {
     GlobalVariables.AColor aColor;
     Intake intake;

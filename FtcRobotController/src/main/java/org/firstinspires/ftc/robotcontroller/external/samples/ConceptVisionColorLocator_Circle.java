@@ -144,6 +144,8 @@ public class ConceptVisionColorLocator_Circle extends LinearOpMode {
                 .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
 
                 .build();
+
+
         /*
          * Build a vision portal to run the Color Locator process.
          *

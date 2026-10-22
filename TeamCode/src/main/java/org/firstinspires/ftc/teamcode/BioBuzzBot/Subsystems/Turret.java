@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -15,7 +16,8 @@ import java.util.Map;
 public class Turret extends SubsystemBase {
 
     public static Servo sT1, sT2;
-    private final Servo[] turretServos = {sT1, sT2};
+    private final Servo[] turretServos = {sT1};//, sT2};
+    private static AnalogInput saT1;
 
     public static int manualOffsetDegrees = 0;
 
@@ -23,7 +25,7 @@ public class Turret extends SubsystemBase {
     private static double targetPosition;
 
     GlobalVariables.AColor aColor;
-
+    static boolean scoring;
 
     public boolean TurretTrackingDisabled = false;
 
@@ -32,7 +34,9 @@ public class Turret extends SubsystemBase {
         manualOffsetDegrees = 0;
 
         sT1 = hardwareMap.get(Servo.class, "sT1");
-        sT2 = hardwareMap.get(Servo.class, "sT2");
+        //sT2 = hardwareMap.get(Servo.class, "sT2");
+
+        saT1 = hardwareMap.get(AnalogInput.class, "saT1");
 
 
     }
@@ -40,12 +44,24 @@ public class Turret extends SubsystemBase {
     // === BASIC CONTROLS ===
 
     public static double getCurrentPosition() {
-        return sT1.getPosition();
+        return saT1.getVoltage()/saT1.getMaxVoltage();
     }
 
 
+    public static double getErrorDEG() {
+        return getTurretThetaDEG()-getTargetDEG();
+    }
+
     public static double getTargetPosition() {
         return targetPosition;
+    }
+
+    public static double getTargetRAD() {
+        return targetPosition * BotPositions.Turret.RADIANS_PER_SERVO_POSITION;
+    }
+
+    public static double getTargetDEG() {
+        return Math.toRadians(getTargetRAD());
     }
 
     public static void setTargetPosition(double position) {
@@ -71,11 +87,11 @@ public class Turret extends SubsystemBase {
         TurretTrackingDisabled = false;
     }
 
-    public double getTurretThetaRAD() {
+    public static double getTurretThetaRAD() {
         return (getCurrentPosition() * BotPositions.Turret.RADIANS_PER_SERVO_POSITION);
     }
 
-    public double getTurretThetaDEG() {
+    public static double getTurretThetaDEG() {
         return (Math.toDegrees(getTurretThetaRAD()));
     }
 
@@ -94,7 +110,7 @@ public class Turret extends SubsystemBase {
 
     public void updateTurretTracking(Follower follower, Telemetry telemetry) {
 
-        boolean scoring = follower.pose().y() > 70.75;
+         scoring = follower.pose().y() > 70.75;
 
         targetHive = (aColor == GlobalVariables.AColor.BLUE)
                 ? (scoring ? GlobalVariables.TargetHive.BLUE_SCORING : GlobalVariables.TargetHive.BLUE_AUDIENCE)
