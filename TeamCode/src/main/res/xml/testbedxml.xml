@@ -13,9 +13,7 @@
 <!--            <Servo name="sT1" port="1"/>-->
         </ServoHub>
 
-        <Analogue name="Analogue" port="1">
-            <Servo name="sT1" port="1"/>
-        </Analogue>
+        <AnalogInput name="Analogue Input" port="1"/>
 
     </LynxUsbDevice>
 </Robot>
