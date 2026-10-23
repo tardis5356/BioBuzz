@@ -10,8 +10,13 @@
             <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
         </LynxModule>
         <ServoHub name="Servo Hub 3" port="3">
-            <Servo name="sT1" port="1"/>
+<!--            <Servo name="sT1" port="1"/>-->
         </ServoHub>
+
+        <Analogue name="Analogue" port="1">
+            <Servo name="sT1" port="1"/>
+        </Analogue>
+
     </LynxUsbDevice>
 </Robot>
 
