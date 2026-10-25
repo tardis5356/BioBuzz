@@ -61,12 +61,12 @@ public final class BotPositions {
 
         // === Physical Mounting Geometry ===
         public static final double Z_OFFSET = 5.87;          // lens height above floor
-        public static final double PITCH_RADIAN = Math.toRadians(115);
+        public static final double PITCH_RADIAN = Math.toRadians(25);
         public static final double Y_OFFSET = 8.64;                // forward/back offset
         public static final double X_OFFSET = 0.0;                // left/right offset
 
         // === Optical Properties ===
-        public static final double FOV_HORIZONTAL_RAD = Math.toRadians(90);
+        public static final double FOV_HORIZONTAL_RAD = Math.toRadians(85.28);
         public static final double FOCAL_LENGTH_PIXELS = 460;     // TODO Tune
         public static final double BALL_DIAMETER_INCHES = 2.5;
 

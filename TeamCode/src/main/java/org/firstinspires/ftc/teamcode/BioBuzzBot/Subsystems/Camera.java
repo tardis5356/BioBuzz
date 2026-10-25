@@ -191,11 +191,11 @@ public class Camera extends SubsystemBase {
      */
 
     public void pauseAprilTagProcessing() {
-        active().portal.setProcessorEnabled(active().balls, false);
+        active().portal.setProcessorEnabled(active().tags, false);
     }
 
     public void resumeAprilTagProcessing() {
-        active().portal.setProcessorEnabled(active().balls, true);
+        active().portal.setProcessorEnabled(active().tags, true);
     }
 
     public Pose getAprilTagPose() {

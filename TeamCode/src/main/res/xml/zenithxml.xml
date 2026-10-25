@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Expansion Hub 2" port="2">
+
+            <goBILDA5202SeriesMotor name="mIF" port="0"/>
+            <goBILDA5202SeriesMotor name="mIB" port="1"/>
+            <goBILDA5202SeriesMotor name="mST" port="2"/>
+            <goBILDA5202SeriesMotor name="mSB" port="3"/>
+
+            <DigitalDevice name="bb1" port="7"/>
+            <DigitalDevice name="bb2" port="5"/>
+            <DigitalDevice name="bb3" port="3"/>
+            <DigitalDevice name="bb4" port="1"/>
+
+        </LynxModule>
+        <ServoHub name="Servo Hub 3" port="3">
+            <Servo name="sT1" port="1"/>
+            <Servo name="sT2" port="2"/>
+<!--            <Servo name="sT3" port="3"/>-->
+<!--            <Servo name="sT4" port="4"/>-->
+        </ServoHub>
+        <LynxModule name="Control Hub" port="173">
+
+            <goBILDA5202SeriesMotor name="mBR" port="0"/>
+            <goBILDA5202SeriesMotor name="mFR" port="1"/>
+            <goBILDA5202SeriesMotor name="mBL" port="2"/>
+            <goBILDA5202SeriesMotor name="mFL" port="3"/>
+
+            <DigitalDevice name="bbS" port="1"/>
+
+            <Servo name="sW" port="0"/>
+            <Servo name="sH" port="1"/>
+            <Servo name="sG" port="2"/>
+
+            <LynxEmbeddedIMU name="imu" port="0" bus="0"/>
+            <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
+
+            <AnalogInput name="saT1" port="0"/>
+        </LynxModule>
+    </LynxUsbDevice>
+</Robot>
+
+
