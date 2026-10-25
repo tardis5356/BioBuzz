@@ -1,6 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Robot type="FirstInspires-FTC">
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Expansion Hub 1" port="1">
+
+        </LynxModule>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="mFL" port="0"/>
             <goBILDA5202SeriesMotor name="mFR" port="1"/>
@@ -9,11 +12,11 @@
             <LynxEmbeddedIMU name="imu" port="0" bus="0"/>
             <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
             <AnalogInput name="saT1" port="0"/>
+            <Servo name="sT1" port="0"/>
+<!--            port 1 doesn't work-->
         </LynxModule>
-        <ServoHub name="Servo Hub 3" port="3">
-            <Servo name="sT1" port="1"/>
-        </ServoHub>
-        <AnalogInput name="aiT1" port="1"/>
+
+
 
     </LynxUsbDevice>
 </Robot>

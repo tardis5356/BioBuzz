@@ -74,9 +74,9 @@ public class Turret extends SubsystemBase {
     }
 
     public void setTurretServoPosition(double position) {
-        for (Servo s : turretServos) {
-            s.setPosition(position);
-        }
+//        for (Servo s : turretServos) {
+            sT1.setPosition(position);
+//        }
     }
 
     public void disableTurretTracking() {
@@ -164,6 +164,8 @@ public class Turret extends SubsystemBase {
 
         // === TELEMETRY ===
         telemetry.addData("Desired Turret On Field Theta:", desiredFieldTurretAngleRAD);
+        telemetry.addData("ServoPosition", sT1.getPosition());
+        telemetry.addData("AnalogInputPosition", getCurrentPosition());
 
     }
 

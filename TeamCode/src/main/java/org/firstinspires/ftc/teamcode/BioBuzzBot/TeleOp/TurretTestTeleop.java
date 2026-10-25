@@ -39,13 +39,13 @@ public class TurretTestTeleop extends CommandOpMode {
 
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
-
+turret.setTargetPosition(.5);
 
         follower = Constants.create(hardwareMap);
 
         turret.disableTurretTracking();
         follower.setPose(new Pose(70.75, 70.75, Math.toRadians(270)));
-        Turret.setTargetPosition(0.5);
+
         follower.update();
 
 
@@ -56,10 +56,10 @@ public class TurretTestTeleop extends CommandOpMode {
                         new InstantCommand(turret::disableTurretTracking)
                 );
 
-        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
-                .whenActive(
-                        new InstantCommand(() -> Turret.setTargetPosition(.5))
-                );
+//        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
+//                .whenActive(
+//                        new InstantCommand(() -> Turret.setTargetPosition(.5))
+//                );
 //        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.CIRCLE))
 //                .whenActive(
 //                        new InstantCommand(() -> Turret.setTargetPosition(.5))
