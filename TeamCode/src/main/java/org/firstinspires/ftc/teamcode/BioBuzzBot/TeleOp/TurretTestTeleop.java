@@ -56,10 +56,11 @@ turret.setTargetPosition(.5);
                         new InstantCommand(turret::disableTurretTracking)
                 );
 
-//        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
-//                .whenActive(
-//                        new InstantCommand(() -> Turret.setTargetPosition(.5))
-//                );
+        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
+                .toggleWhenActive(
+                        new InstantCommand(() -> Turret.setTargetPosition(0)),
+                        new InstantCommand(() -> Turret.setTargetPosition(1))
+                );
 //        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.CIRCLE))
 //                .whenActive(
 //                        new InstantCommand(() -> Turret.setTargetPosition(.5))
