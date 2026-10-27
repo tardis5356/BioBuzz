@@ -10,10 +10,10 @@ import com.bylazar.configurables.annotations.Configurable;
 @Configurable
 public final class BotPositions {
     public static final class Turret {
-        public static final double TOTAL_DEGREES = 516.3636; //430.303030303;
-        public static final double TOTAL_RADIANS = Math.toRadians(TOTAL_DEGREES);
+        public static final double TOTAL_SERVO_ROTATION_DEGREES = 450; //516.3636;
+        public static final double TOTAL_RADIANS = Math.toRadians(TOTAL_SERVO_ROTATION_DEGREES);
         public static final double RADIANS_PER_SERVO_POSITION = TOTAL_RADIANS;
-        public static final double SERVO_POSITION_PER_DEGREE = 1.0 / TOTAL_DEGREES;
+        public static final double SERVO_POSITION_PER_DEGREE = 1.0 / TOTAL_SERVO_ROTATION_DEGREES;
         public static final double OFFSET_X = 0.0;
         public static final double OFFSET_Y = 0.0;
         public static final double MAX_ROTATION_DEG = 200;

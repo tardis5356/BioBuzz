@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.BioBuzzBot.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.AutoTrajectories.savedPose;
+import static org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.BotPositions.Turret.TOTAL_SERVO_ROTATION_DEGREES;
 import static org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables.inAuto;
 
 import com.pedropathing.follower.Follower;
@@ -59,7 +60,7 @@ turret.setTargetPosition(.5);
         new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
                 .toggleWhenActive(
                         new InstantCommand(() -> Turret.setTargetPosition(0)),
-                        new InstantCommand(() -> Turret.setTargetPosition(1))
+                        new InstantCommand(() -> Turret.setTargetPosition(360/TOTAL_SERVO_ROTATION_DEGREES)) // want to rotate by 360
                 );
 //        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.CIRCLE))
 //                .whenActive(

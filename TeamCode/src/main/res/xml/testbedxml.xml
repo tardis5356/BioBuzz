@@ -11,7 +11,7 @@
             <goBILDA5202SeriesMotor name="mBR" port="3"/>
             <LynxEmbeddedIMU name="imu" port="0" bus="0"/>
             <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
-            <AnalogInput name="saT1" port="0"/>
+            <AnalogInput name="saT1" port="1"/>
             <Servo name="sT1" port="0"/>
 <!--            port 1 doesn't work-->
         </LynxModule>
