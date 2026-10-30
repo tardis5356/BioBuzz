@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-public class Ramp extends SubsystemBase {
+public class Wedge extends SubsystemBase {
 
-    Servo sR;
+    Servo sW;
 
-    public Ramp(HardwareMap hardwareMap) {
-        sR = hardwareMap.get(Servo.class, "sR");
+    public Wedge(HardwareMap hardwareMap) {
+        sW = hardwareMap.get(Servo.class, "sW");
         retract();
     }
 
@@ -20,12 +20,12 @@ public class Ramp extends SubsystemBase {
     }
 
     public void deploy() {
-        sR.setPosition(BotPositions.Ramp.FRONT);
+        sW.setPosition(BotPositions.Ramp.FRONT);
     }
 
 
     public void retract() {
-        sR.setPosition(BotPositions.Ramp.RETRACT);
+        sW.setPosition(BotPositions.Ramp.RETRACT);
     }
 
 }

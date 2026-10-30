@@ -9,7 +9,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Ramp;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
@@ -26,7 +26,7 @@ public class AutoGenerator {
             Shooter shooter,
             Transfer transfer,
             Camera camera,
-            Ramp ramp,
+            Wedge wedge,
             BioBuzzAuto.StartChoice startChoice,
             BioBuzzAuto.TransitChoice transitChoice
     ) {
@@ -42,23 +42,23 @@ public class AutoGenerator {
         if (startChoice == BioBuzzAuto.StartChoice.GARDEN) {
             new FollowPathCommand(follower, AutoTrajectories.gardenStartToGardenIntake());
         } else if (startChoice == BioBuzzAuto.StartChoice.ALLIANCE_FLOWER) {
-            seq.add(new InstantCommand(ramp::deploy));
+            seq.add(new InstantCommand(wedge::deploy));
             new FollowPathCommand(follower, AutoTrajectories.allianceFlowerStartToAllianceFlowerIntake());
         }
         seq.add(new InstantCommand(intake::stop));
         if (startChoice == BioBuzzAuto.StartChoice.GARDEN) {
             new FollowPathCommand(follower, AutoTrajectories.gardenIntakeToLoadingZoneShoot);
         } else if (startChoice == BioBuzzAuto.StartChoice.ALLIANCE_FLOWER) {
-            seq.add(new InstantCommand(ramp::retract));
+            seq.add(new InstantCommand(wedge::retract));
             new FollowPathCommand(follower, AutoTrajectories.allianceFlowerIntakeToLoadingZoneShoot);
         }
         seq.add(new LaunchSequenceCommand(intake, transfer));
-        seq.add(new InstantCommand(ramp::deploy));
+        seq.add(new InstantCommand(wedge::deploy));
         seq.add(new InstantCommand(intake::in));
         new FollowPathCommand(follower, AutoTrajectories.loadingZoneShootToLoadingZoneFlowerIntake());
         seq.add(new LaunchSequenceCommand(intake, transfer));
         new FollowPathCommand(follower, AutoTrajectories.loadingFlowerIntakeToParkPosition());
-        seq.add(new InstantCommand(ramp::retract));
+        seq.add(new InstantCommand(wedge::retract));
 
 
         return new SequentialCommandGroup(seq.toArray(new Command[0]));

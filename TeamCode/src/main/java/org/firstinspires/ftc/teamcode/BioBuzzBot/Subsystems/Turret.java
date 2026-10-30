@@ -74,9 +74,9 @@ public class Turret extends SubsystemBase {
     }
 
     public void setTurretServoPosition(double position) {
-        for (Servo s : turretServos) {
-            s.setPosition(position);
-        }
+//        for (Servo s : turretServos) {
+            sT1.setPosition(position);
+//        }
     }
 
     public void disableTurretTracking() {
@@ -154,7 +154,7 @@ public class Turret extends SubsystemBase {
         if (!TurretTrackingDisabled) {
             setTargetPosition(desiredTicks);
         } else {
-            setTargetPosition(.5);
+           // setTargetPosition(.5);
         }
 
 
@@ -163,7 +163,10 @@ public class Turret extends SubsystemBase {
                 Math.hypot(goalY - turretFieldY, goalX - turretFieldX);
 
         // === TELEMETRY ===
-        telemetry.addData("Desired Turret On Field Theta:", desiredFieldTurretAngleRAD);
+        telemetry.addData("targetHive", targetHive);
+        telemetry.addData("Desired Turret On Field Theta:", Math.toDegrees(desiredFieldTurretAngleRAD));
+        telemetry.addData("ServoPosition", sT1.getPosition());
+        telemetry.addData("AnalogInputPosition", getCurrentPosition());
 
     }
 

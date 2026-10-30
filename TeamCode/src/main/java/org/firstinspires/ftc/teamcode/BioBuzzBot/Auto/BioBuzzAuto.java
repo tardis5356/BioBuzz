@@ -12,7 +12,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Ramp;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
@@ -29,7 +29,7 @@ public class BioBuzzAuto extends OpMode {
     private Shooter shooter;
     private Transfer transfer;
     private Camera camera;
-    private Ramp ramp;
+    private Wedge wedge;
 
     private GlobalVariables.AColor aColor;
 
@@ -130,7 +130,7 @@ public class BioBuzzAuto extends OpMode {
                 shooter,
                 transfer,
                 camera,
-                ramp,
+                wedge,
                 startChoice,
                 transitChoice
         );

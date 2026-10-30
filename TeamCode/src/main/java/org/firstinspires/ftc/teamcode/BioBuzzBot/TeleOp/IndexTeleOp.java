@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Ramp;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
@@ -30,7 +30,7 @@ public class IndexTeleOp extends CommandOpMode {
     Turret turret;
     Shooter shooter;
     Transfer transfer;
-    Ramp ramp;
+    Wedge wedge;
 
     GamepadEx driver1, driver2;
     Follower follower;
@@ -48,7 +48,7 @@ public class IndexTeleOp extends CommandOpMode {
         shooter = new Shooter(hardwareMap);
         transfer = new Transfer(hardwareMap);
         turret = new Turret(hardwareMap);
-        ramp = new Ramp(hardwareMap);
+        wedge = new Wedge(hardwareMap);
 
         CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
         shooter.spinning = true;
@@ -114,7 +114,7 @@ public class IndexTeleOp extends CommandOpMode {
 
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                .toggleWhenActive(new InstantCommand(ramp::deploy), new InstantCommand(ramp::retract));
+                .toggleWhenActive(new InstantCommand(wedge::deploy), new InstantCommand(wedge::retract));
 
 
         telemetry.clearAll();

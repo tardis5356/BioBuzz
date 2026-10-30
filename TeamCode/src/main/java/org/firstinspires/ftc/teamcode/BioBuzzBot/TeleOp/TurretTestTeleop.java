@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.BioBuzzBot.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.AutoTrajectories.savedPose;
+import static org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.BotPositions.Turret.TOTAL_SERVO_ROTATION_DEGREES;
 import static org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables.inAuto;
 
 import com.pedropathing.follower.Follower;
@@ -14,12 +15,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Ramp;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
 
 
@@ -44,13 +40,13 @@ public class TurretTestTeleop extends CommandOpMode {
 
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
-
+turret.setTargetPosition(.5);
 
         follower = Constants.create(hardwareMap);
 
         turret.disableTurretTracking();
         follower.setPose(new Pose(70.75, 70.75, Math.toRadians(270)));
-        Turret.setTargetPosition(0.5);
+
         follower.update();
 
 
@@ -62,8 +58,9 @@ public class TurretTestTeleop extends CommandOpMode {
                 );
 
         new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
-                .whenActive(
-                        new InstantCommand(() -> Turret.setTargetPosition(.5))
+                .toggleWhenActive(
+                        new InstantCommand(() -> Turret.setTargetPosition(0)),
+                        new InstantCommand(() -> Turret.setTargetPosition(360/TOTAL_SERVO_ROTATION_DEGREES)) // want to rotate by 360
                 );
 //        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.CIRCLE))
 //                .whenActive(

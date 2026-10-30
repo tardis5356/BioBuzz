@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems;
 
-import static android.os.SystemClock.sleep;
-
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -20,9 +18,14 @@ public class Intake extends SubsystemBase {
     private DcMotorEx mIF, mIB;
     private DcMotorEx[] intakeMotors;
 
-    private DigitalChannel[] beamBreaks;
+    private DigitalChannel[] intakeBeamBreaks;
+    private DigitalChannel bbS;
+
     private boolean[] latched;
     private long[] lastBroken;
+
+    private boolean sLatched = false;
+    private long sLastBroken = 0;
 
     private static final long CLEAR_TIME_MS = 75;
 
@@ -42,15 +45,17 @@ public class Intake extends SubsystemBase {
         DigitalChannel bb2 = hardwareMap.get(DigitalChannel.class, "bb2");
         DigitalChannel bb3 = hardwareMap.get(DigitalChannel.class, "bb3");
         DigitalChannel bb4 = hardwareMap.get(DigitalChannel.class, "bb4");
+        bbS = hardwareMap.get(DigitalChannel.class, "bbS");
 
-        beamBreaks = new DigitalChannel[]{bb1, bb2, bb3, bb4};
+        intakeBeamBreaks = new DigitalChannel[]{bb1, bb2, bb3, bb4};
 
-        for (DigitalChannel bb : beamBreaks) {
+        for (DigitalChannel bb : intakeBeamBreaks) {
             bb.setMode(DigitalChannel.Mode.INPUT);
         }
+        bbS.setMode(DigitalChannel.Mode.INPUT);
 
-        latched = new boolean[beamBreaks.length];
-        lastBroken = new long[beamBreaks.length];
+        latched = new boolean[intakeBeamBreaks.length];
+        lastBroken = new long[intakeBeamBreaks.length];
 
         stop();
     }
@@ -58,28 +63,39 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
 
+        // Count balls
         int bbBallCount = 0;
-        for (int i = 0; i < beamBreaks.length; i++) {
-            if (getBeamBreakState(i)) bbBallCount++;
+        for (int i = 0; i < intakeBeamBreaks.length; i++) {
+            if (getIntakeBeamBreakState(i)) bbBallCount++;
         }
 
+        // Reset overflow timer when safe
         if (bbBallCount <= 2) {
             bbOverflowTimer.reset();
         }
 
+        // Overflow triggers auto mode
         if (intakeMode == IntakeMode.MANUAL && bbOverflowTimer.seconds() > 0.5) {
             enableAuto();
             out();
-            sleep(BotPositions.Intake.EJECT_TIME_MS);
-            bbOverflowTimer.reset();
-            disableAuto();
-            stop();
+        }
+
+        // AUTO MODE: continue outtaking until bbS clears
+        if (intakeMode == IntakeMode.AUTO) {
+            boolean sState = getShooterBeamBreakState();
+
+            if (!sState) {  // bbS is clear
+                stop();
+                disableAuto();
+            }
         }
     }
 
-    private boolean getBeamBreakState(int index) {
+    // === Beam Break Latching ===
+
+    private boolean getIntakeBeamBreakState(int index) {
         long now = System.currentTimeMillis();
-        boolean broken = !beamBreaks[index].getState(); // false = broken
+        boolean broken = !intakeBeamBreaks[index].getState(); // false = broken
 
         if (broken) {
             latched[index] = true;
@@ -90,6 +106,22 @@ public class Intake extends SubsystemBase {
 
         return latched[index];
     }
+
+    private boolean getShooterBeamBreakState() {
+        long now = System.currentTimeMillis();
+        boolean broken = !bbS.getState(); // false = broken
+
+        if (broken) {
+            sLatched = true;
+            sLastBroken = now;
+        } else if (sLatched && now - sLastBroken > CLEAR_TIME_MS) {
+            sLatched = false;
+        }
+
+        return sLatched;
+    }
+
+    // === Motor Control ===
 
     public void setIntakePower(double power) {
         for (DcMotorEx m : intakeMotors) {
@@ -120,5 +152,6 @@ public class Intake extends SubsystemBase {
         intakeMode = IntakeMode.MANUAL;
     }
 }
+
 
 
