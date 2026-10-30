@@ -165,8 +165,17 @@ public class Turret extends SubsystemBase {
         // === TELEMETRY ===
         telemetry.addData("targetHive", targetHive);
         telemetry.addData("Desired Turret On Field Theta:", Math.toDegrees(desiredFieldTurretAngleRAD));
+        telemetry.addData("Desired Turret On Bot Theta:", Math.toDegrees(desiredTurretOnBotAngleRAD));
+        telemetry.addData("Desired Ticks",desiredTicks);
         telemetry.addData("ServoPosition", sT1.getPosition());
         telemetry.addData("AnalogInputPosition", getCurrentPosition());
+        telemetry.addData("Robot On Field X", follower.pose().x());
+        telemetry.addData("Robot On Field Y", follower.pose().y());
+        telemetry.addData("Robot Heading", Math.toDegrees(follower.pose().heading()));
+
+        telemetry.addData("Hive X", hivePose.x());
+        telemetry.addData("Hive Y", hivePose.y());
+
 
     }
 

@@ -60,7 +60,7 @@ turret.setTargetPosition(.5);
         new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.SQUARE))
                 .toggleWhenActive(
                         new InstantCommand(() -> Turret.setTargetPosition(0)),
-                        new InstantCommand(() -> Turret.setTargetPosition(360/TOTAL_SERVO_ROTATION_DEGREES)) // want to rotate by 360
+                        new InstantCommand(() -> Turret.setTargetPosition(1))
                 );
 //        new Trigger(() -> turret.TurretTrackingDisabled && driver1.getButton(GamepadKeys.Button.CIRCLE))
 //                .whenActive(
