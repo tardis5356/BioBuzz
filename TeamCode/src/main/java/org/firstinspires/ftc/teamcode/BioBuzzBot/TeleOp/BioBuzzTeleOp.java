@@ -129,7 +129,7 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
 
         telemetry.clearAll();
-        telemetry.addLine("Ready To Go");
+//        telemetry.addLine("Ready To Go");
         telemetry.update();
 
     }

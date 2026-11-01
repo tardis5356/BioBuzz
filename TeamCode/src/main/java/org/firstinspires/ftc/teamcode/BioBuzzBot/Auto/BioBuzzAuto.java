@@ -17,19 +17,19 @@ import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.Constants;
-@Autonomous(name = "Decode Auto"
+@Autonomous(name = "BioBuzz Auto"
        // , preselectTeleOp = "BioBuzz Teleop"
 )
 public class BioBuzzAuto extends OpMode {
 
 
     private Follower follower;
-    private Turret turret;
-    private Intake intake;
-    private Shooter shooter;
-    private Transfer transfer;
-    private Camera camera;
-    private Wedge wedge;
+//    private Turret turret;
+//    private Intake intake;
+//    private Shooter shooter;
+//    private Transfer transfer;
+//    private Camera camera;
+//    private Wedge wedge;
 
     private GlobalVariables.AColor aColor;
 
@@ -125,12 +125,12 @@ public class BioBuzzAuto extends OpMode {
         follower.update();
         SequentialCommandGroup auto = AutoGenerator.buildAuto(
                 follower,
-                intake,
-                turret,
-                shooter,
-                transfer,
-                camera,
-                wedge,
+//                intake,
+//                turret,
+//                shooter,
+//                transfer,
+//                camera,
+//                wedge,
                 startChoice,
                 transitChoice
         );
