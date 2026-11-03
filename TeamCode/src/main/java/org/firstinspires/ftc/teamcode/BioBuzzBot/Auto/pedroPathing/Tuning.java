@@ -5,11 +5,12 @@ import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.localizers.PinpointLocalizer;
 import com.pedropathing.tuning.autotune.Procedure;
 import com.pedropathing.tuning.autotune.Tuner;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.procedures.ForesightTuner;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.procedures.PinpointTuner;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.procedures.Tests;
-
+@Disabled
 public class Tuning {
 
     @Tuner

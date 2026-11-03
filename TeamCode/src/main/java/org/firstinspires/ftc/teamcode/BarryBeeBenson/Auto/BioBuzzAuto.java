@@ -28,6 +28,7 @@ public class BioBuzzAuto extends OpMode {
     private Intake intake;
     private Shooter shooter;
     private Transfer transfer;
+    private Wedge wedge;
     private GlobalVariables.AColor aColor;
 
 //    public enum StartChoice {

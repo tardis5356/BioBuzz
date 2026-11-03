@@ -162,7 +162,7 @@ public class BBBAutoTrajectories {
 
     public static Path allianceFlowerIntakeToLoadingZoneShoot;
 
-    public static void generateTrajectories(Follower follower, BioBuzzAuto.StartChoice startChoice, BioBuzzAuto.TransitChoice transitChoice) {
+    public static void generateTrajectories(Follower follower /*, BioBuzzAuto.StartChoice startChoice, BioBuzzAuto.TransitChoice transitChoice*/) {
 
         if (aColor == GlobalVariables.AColor.RED) {
             poseFactory.mirrorY(70.75);
@@ -174,29 +174,29 @@ public class BBBAutoTrajectories {
         Pose allianceFlowerIntakeToLoadingZoneShootControl1 = null;
         Pose allianceFlowerIntakeToLoadingZoneShootControl2 = null;
 
-        switch (transitChoice) {
-            case INSIDE:
-                gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_Inside;
-                gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_Inside;
-
-                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_Inside;
-                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_Inside;
-                break;
-            case OUTSIDE_TRAVEL:
-                gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_OutsideTravel;
-                gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_OutsideTravel;
-
-                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_OutsideTravel;
-                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_OutsideTravel;
-                break;
-            case OUTSIDE_PARK:
-                gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_OutsidePark;
-                gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_OutsidePark;
-
-                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_OutsidePark;
-                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_OutsidePark;
-                break;
-        }
+//        switch (transitChoice) {
+//            case INSIDE:
+//                gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_Inside;
+//                gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_Inside;
+//
+//                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_Inside;
+//                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_Inside;
+//                break;
+//            case OUTSIDE_TRAVEL:
+//                gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_OutsideTravel;
+//                gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_OutsideTravel;
+//
+//                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_OutsideTravel;
+//                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_OutsideTravel;
+//                break;
+//            case OUTSIDE_PARK:
+//                gardenIntakeToLoadingZoneShootControl1 = gardenIntakeToLoadingZoneShootControl1_OutsidePark;
+//                gardenIntakeToLoadingZoneShootControl2 = gardenIntakeToLoadingZoneShootControl2_OutsidePark;
+//
+//                allianceFlowerIntakeToLoadingZoneShootControl1 = allianceFlowerIntakeToLoadingZoneShootControl1_OutsidePark;
+//                allianceFlowerIntakeToLoadingZoneShootControl2 = allianceFlowerIntakeToLoadingZoneShootControl2_OutsidePark;
+////                break;
+//        }
         gardenIntakeToLoadingZoneShoot =
                 curve(gardenIntake, gardenIntakeToLoadingZoneShootControl1, gardenIntakeToLoadingZoneShootControl2, loadingZoneShoot)
                         .heading(
@@ -217,26 +217,26 @@ public class BBBAutoTrajectories {
 
 
 
-      switch(startChoice) {
-          case GARDEN:
-              startPose = gardenStart;
-              follower.setPose(startPose);
-              follower.update();
-              break;
-          case LOADING_ZONE_PARK:
-              startPose = loadingZoneStart;
-              follower.setPose(startPose);
-              follower.update();
-              break;
-          case ALLIANCE_FLOWER:
-              startPose = allianceFlowerStart;
-              follower.setPose(startPose);
-              follower.update();
-              break;
-
-          default:
-              throw new IllegalArgumentException("Invalid StartChoice: " + startChoice);
-      }
+//      switch(startChoice) {
+//          case GARDEN:
+//              startPose = gardenStart;
+//              follower.setPose(startPose);
+//              follower.update();
+//              break;
+//          case LOADING_ZONE_PARK:
+//              startPose = loadingZoneStart;
+//              follower.setPose(startPose);
+//              follower.update();
+//              break;
+//          case ALLIANCE_FLOWER:
+//              startPose = allianceFlowerStart;
+//              follower.setPose(startPose);
+//              follower.update();
+//              break;
+//
+//          default:
+//              throw new IllegalArgumentException("Invalid StartChoice: " + startChoice);
+//      }
 
 
 

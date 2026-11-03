@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Bee_Tele")
 
@@ -14,6 +15,7 @@ public class Bee_TeleOp extends LinearOpMode {
 
     DcMotor mFL, mFR, mBL, mBR;
     CRServo sIL, sIR, sI;
+    Servo sW;
     DcMotorSimple mF, mI;
 
 
@@ -31,6 +33,8 @@ public class Bee_TeleOp extends LinearOpMode {
         sIL = hardwareMap.get(CRServo.class, "sIL");
         sIR = hardwareMap.get(CRServo.class, "sIR");
         sI = hardwareMap.get(CRServo.class, "sI");
+        sW = hardwareMap.get(Servo.class,"sW");
+
         flyWheelSpeed = .5;
 
        mBR.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -82,6 +86,12 @@ public class Bee_TeleOp extends LinearOpMode {
             if (gamepad1.dpadDownWasPressed()){
                 flyWheelSpeed -= 0.05;
             }
+
+            if (gamepad1.b){
+                sW.setPosition(1);
+            }else {
+                sW.setPosition(0);
+            }
 //
 //            if (gamepad1.b) {
 //                sIL.setPower(1);
@@ -111,6 +121,10 @@ public class Bee_TeleOp extends LinearOpMode {
             telemetry.addData("mFL get current position", "%7d",
                     mFL.getCurrentPosition());
             telemetry.addData("flyWheelSpeed", flyWheelSpeed);
+
+            telemetry.addData("Servo pose",sW.getPosition());
+
+
             telemetry.update();
         }
     }
