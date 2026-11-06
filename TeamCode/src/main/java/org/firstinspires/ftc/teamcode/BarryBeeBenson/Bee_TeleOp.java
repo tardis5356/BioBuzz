@@ -67,8 +67,6 @@ public class Bee_TeleOp extends LinearOpMode {
                 mF.setPower(0);
             }
 
-
-
 //            if (gamepad1.x) {
 //                mF.setPower(currentVelocity < flyWheelSpeed ? 1.0 : 0.0);
 //            } else {
