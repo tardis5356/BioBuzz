@@ -37,7 +37,7 @@ public class Bee_TeleOp extends LinearOpMode {
 
         flyWheelSpeed = .5;
 
-       mBR.setDirection(DcMotorSimple.Direction.REVERSE);
+       mBL.setDirection(DcMotorSimple.Direction.REVERSE);
        mFL.setDirection(DcMotorSimple.Direction.REVERSE);
        mF.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -47,9 +47,9 @@ public class Bee_TeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             //Actual Logic Stuff
 
-            FB = gamepad1.left_stick_y;
-            LR = gamepad1.right_stick_x;
-            Rotation = gamepad1.left_stick_x;
+            FB = -gamepad1.left_stick_y;
+            LR = gamepad1.left_stick_x;
+            Rotation = gamepad1.right_stick_x;
 
             mFLPower = FB + LR + Rotation;
             mFRPower = FB - LR - Rotation;
@@ -66,6 +66,8 @@ public class Bee_TeleOp extends LinearOpMode {
             } else {
                 mF.setPower(0);
             }
+
+
 
 //            if (gamepad1.x) {
 //                mF.setPower(currentVelocity < flyWheelSpeed ? 1.0 : 0.0);
@@ -93,13 +95,31 @@ public class Bee_TeleOp extends LinearOpMode {
                 sW.setPosition(0);
             }
 //
-//            if (gamepad1.b) {
-//                sIL.setPower(1);
-//                sIR.setPower(1);
-//            } else {
-//                sIL.setPower(0);
-//                sIR.setPower(0);
-//            }
+            if (gamepad2.b) {
+                mFL.setPower(1);
+
+            } else {
+                mFL.setPower(0);
+            }
+
+            if (gamepad2.a) {
+                mBL.setPower(1);
+
+            } else {
+                mBL.setPower(0);
+            }
+            if (gamepad2.x) {
+                mBR.setPower(1);
+
+            } else {
+                mBR.setPower(0);
+            }
+            if (gamepad2.y) {
+                mFR.setPower(1);
+
+            } else {
+                mFR.setPower(0);
+            }
 
 
 
