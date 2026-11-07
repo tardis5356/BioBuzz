@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.pedroPathing.procedures.Tests;
 
+import java.security.cert.PKIXRevocationChecker;
 import java.util.OptionalDouble;
 
 public class Constants {
@@ -40,11 +41,11 @@ public class Constants {
 
     public static PinpointConfig localizerConfig = new PinpointConfig(c -> {
         c.name.set("pinpoint");
-        c.ticksPerUnit.set(OptionalDouble.of(0.1142075681310939));
-        c.xPodOffset.set(-1751.433932086614);
-        c.yPodOffset.set(813.4067421259842);
-        c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD); // double check
-        c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD); //double check
+        c.ticksPerUnit.set(OptionalDouble.of((1090.4305555*0.9792* 0.9583)));
+        c.xPodOffset.set(-6.3);
+        c.yPodOffset.set(-3.75);
+        c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
         c.globalDistanceUnit.set(DistanceUnit.INCH);
         c.offsetUnits.set(DistanceUnit.INCH);
     });

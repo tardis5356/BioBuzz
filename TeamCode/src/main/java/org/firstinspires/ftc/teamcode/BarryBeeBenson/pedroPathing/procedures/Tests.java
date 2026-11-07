@@ -307,6 +307,7 @@ class TestsLocalization extends TuningOpMode<Boolean> {
 //                GoBildaPinpointDriver.EncoderDirection.FORWARD
 //        );
 pinpoint.resetPosAndIMU();
+
         localizer.setPose(Pose.zero());
 
         Thread.sleep(1000);

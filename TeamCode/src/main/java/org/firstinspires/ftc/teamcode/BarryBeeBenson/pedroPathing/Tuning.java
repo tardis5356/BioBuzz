@@ -20,4 +20,8 @@ public class Tuning {
     public static Procedure pinpointTuner() {
         return new PinpointTuner();
     }
+    @Tuner
+    public static Procedure tests() {
+        return new Tests(hardwareMap -> new Mecanum(hardwareMap, Constants.drivetrainConfig), (hardwareMap -> new PinpointLocalizer(hardwareMap, Constants.localizerConfig)), null);
+    }
 }
