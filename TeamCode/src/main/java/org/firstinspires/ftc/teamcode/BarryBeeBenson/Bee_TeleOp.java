@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -13,13 +14,15 @@ public class Bee_TeleOp extends LinearOpMode {
 
     //Set up hardware components and variables
 
-    DcMotor mFL, mFR, mBL, mBR;
+    DcMotor mFL, mFR, mBL;
+    DcMotorEx mBR;
     CRServo sIL, sIR, sI;
     Servo sW;
     DcMotorSimple mF, mI;
+    double currentVelocity;
 
 
-    double mFLPower, mFRPower, mBLPower, mBRPower, FB, LR, Rotation, flyWheelSpeed;
+    double mFLPower, mFRPower, mBLPower, mBRPower, FB, LR, Rotation, flyWheelSpeed = 2400;
 
     @Override
     public void runOpMode() {
@@ -27,15 +30,15 @@ public class Bee_TeleOp extends LinearOpMode {
         mFL = hardwareMap.get(DcMotor.class, "mFL");
         mFR = hardwareMap.get(DcMotor.class, "mFR");
         mBL = hardwareMap.get(DcMotor.class, "mBL");
-        mBR = hardwareMap.get(DcMotor.class, "mBR");
+        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
         mI = hardwareMap.get(DcMotorSimple.class, "mI");
-        mF = hardwareMap.get(DcMotorSimple.class,"mF");
+        mF = hardwareMap.get(DcMotorSimple.class, "mF");
         sIL = hardwareMap.get(CRServo.class, "sIL");
         sIR = hardwareMap.get(CRServo.class, "sIR");
         sI = hardwareMap.get(CRServo.class, "sI");
-        sW = hardwareMap.get(Servo.class,"sW");
+        sW = hardwareMap.get(Servo.class, "sW");
 
-        flyWheelSpeed = .5;
+        flyWheelSpeed = 1400;
 
        mBL.setDirection(DcMotorSimple.Direction.REVERSE);
        mFL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -61,64 +64,65 @@ public class Bee_TeleOp extends LinearOpMode {
             mBL.setPower(mBLPower);
             mBR.setPower(mBRPower);
 
-            if (gamepad1.x) {
-                mF.setPower(flyWheelSpeed);
+//            if (gamepad1.x) {
+//                mF.setPower(flyWheelSpeed);
+//            } else {
+//                mF.setPower(0);
+//            }
+currentVelocity = mBR.getVelocity();
+
+
+            if (gamepad1.x || gamepad2.x) {
+                mF.setPower(currentVelocity < flyWheelSpeed ? 1.0 : 0.0);
             } else {
                 mF.setPower(0);
             }
 
-//            if (gamepad1.x) {
-//                mF.setPower(currentVelocity < flyWheelSpeed ? 1.0 : 0.0);
-//            } else {
-//                mF.setPower(0);
-//            }
-
-            if (gamepad1.a){
+            if (gamepad1.a || gamepad2.a){
                 sI.setPower(1);
             } else {
                 sI.setPower(0);
             }
             if (gamepad1.dpadUpWasPressed()) {
-                flyWheelSpeed += 0.05;
+                flyWheelSpeed += 50;
             }
 
 
             if (gamepad1.dpadDownWasPressed()){
-                flyWheelSpeed -= 0.05;
+                flyWheelSpeed -= 50;
             }
 
-            if (gamepad1.b){
-                sW.setPosition(1);
-            }else {
-                sW.setPosition(0);
-            }
+//            if (gamepad1.b){
+//                sW.setPosition(1);
+//            }else {
+//                sW.setPosition(0);
+//            }
 //
-            if (gamepad2.b) {
-                mFL.setPower(1);
-
-            } else {
-                mFL.setPower(0);
-            }
-
-            if (gamepad2.a) {
-                mBL.setPower(1);
-
-            } else {
-                mBL.setPower(0);
-            }
-            if (gamepad2.x) {
-                mBR.setPower(1);
-
-            } else {
-                mBR.setPower(0);
-            }
-            if (gamepad2.y) {
-                mFR.setPower(1);
-
-            } else {
-                mFR.setPower(0);
-            }
-
+//            if (gamepad2.b) {
+//                mFL.setPower(1);
+//
+//            } else {
+//                mFL.setPower(0);
+//            }
+//
+//            if (gamepad2.a) {
+//                mBL.setPower(1);
+//
+//            } else {
+//                mBL.setPower(0);
+//            }
+//            if (gamepad2.x) {
+//                mBR.setPower(1);
+//
+//            } else {
+//                mBR.setPower(0);
+//            }
+//            if (gamepad2.y) {
+//                mFR.setPower(1);
+//
+//            } else {
+//                mFR.setPower(0);
+//            }
 
 
             mI.setPower(-gamepad1.left_trigger);
@@ -133,7 +137,6 @@ public class Bee_TeleOp extends LinearOpMode {
             sIL.setPower(gamepad1.right_trigger);
 
             sIR.setPower(-gamepad1.right_trigger);
-
 
 
             telemetry.addData("mFL get current position", "%7d",

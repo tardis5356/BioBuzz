@@ -162,7 +162,7 @@ public class BBBAutoTrajectories {
 
     public static Path allianceFlowerIntakeToLoadingZoneShoot;
 
-    public static void generateTrajectories(Follower follower /*, BioBuzzAuto.StartChoice startChoice, BioBuzzAuto.TransitChoice transitChoice*/) {
+    public static void generateTrajectories(Follower follower , BioBuzzAuto.StartChoice startChoice, BioBuzzAuto.TransitChoice transitChoice) {
 
         if (aColor == GlobalVariables.AColor.RED) {
             poseFactory.mirrorY(70.75);

@@ -9,17 +9,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.AutoGenerator;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.AutoTrajectories;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
-
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.Constants;
 @Autonomous(name = "BBB Auto"
-       // , preselectTeleOp = "BioBuzz Teleop"
+        // , preselectTeleOp = "BioBuzz Teleop"
 )
 public class BioBuzzAuto extends OpMode {
 
@@ -29,24 +30,41 @@ public class BioBuzzAuto extends OpMode {
     private Shooter shooter;
     private Transfer transfer;
     private Wedge wedge;
+
     private GlobalVariables.AColor aColor;
 
-//    public enum StartChoice {
-//        GARDEN,
-//        LOADING_ZONE_PARK,
-//        ALLIANCE_FLOWER
-//
-//
-//    }
-//
-//    public enum TransitChoice{
-//        INSIDE,
-//        OUTSIDE_TRAVEL,
-//        OUTSIDE_PARK
-//    }
-//
-//    StartChoice startChoice;
-//    TransitChoice transitChoice;
+    public enum StartChoice {
+        GARDEN(0),
+        LOADING_ZONE_PARK(1),
+        ALLIANCE_FLOWER(2);
+
+        private static final StartChoice[] VALUES = values();
+        private final int start;
+
+        StartChoice(int start) {
+            this.start = start;
+        }
+
+        public int getChoice() {
+            return start;
+        }
+
+        public static StartChoice fromStartChoice(int start) {
+            if (start >= 0 && start < VALUES.length) {
+                return VALUES[start];
+            }
+            return GARDEN; // Default fallback
+        }
+    }
+
+    public enum TransitChoice{
+        INSIDE,
+        OUTSIDE_TRAVEL,
+        OUTSIDE_PARK
+    }
+
+    StartChoice startChoice;
+    TransitChoice transitChoice;
 
 
     @Override
@@ -56,10 +74,10 @@ public class BioBuzzAuto extends OpMode {
         follower = Constants.create(hardwareMap);
 
 
-//        intake = new Intake(hardwareMap);
-//        shooter = new Shooter(hardwareMap);
-//        transfer = new Transfer(hardwareMap);
-
+        intake = new Intake(hardwareMap);
+        shooter = new Shooter(hardwareMap);
+        transfer = new Transfer(hardwareMap);
+//        wedge = new Wedge(hardwareMap);
 
     }
 
@@ -77,39 +95,40 @@ public class BioBuzzAuto extends OpMode {
         if (gamepad2.b) aColor = GlobalVariables.AColor.RED;
 
         // 2. Position Selection
-//        if (gamepad2.dpad_up)    startChoice = StartChoice.GARDEN;
-//        if (gamepad2.dpad_right) startChoice = StartChoice.ALLIANCE_FLOWER;
-//        if (gamepad2.dpad_down)  startChoice = StartChoice.LOADING_ZONE_PARK;
-//
-//        // 3. Transit Selection
-//        if (gamepad1.dpad_up)    transitChoice = TransitChoice.INSIDE;
-//        if (gamepad1.dpad_right) transitChoice = TransitChoice.OUTSIDE_TRAVEL;
-//        if (gamepad1.dpad_down)  transitChoice = TransitChoice.OUTSIDE_PARK;
+        if (gamepad2.dpad_up)    startChoice = StartChoice.GARDEN;
+        if (gamepad2.dpad_right) startChoice = StartChoice.ALLIANCE_FLOWER;
+        if (gamepad2.dpad_down)  startChoice = StartChoice.LOADING_ZONE_PARK;
+
+        // 3. Transit Selection
+        if (gamepad1.dpad_up)    transitChoice = TransitChoice.INSIDE;
+        if (gamepad1.dpad_right) transitChoice = TransitChoice.OUTSIDE_TRAVEL;
+        if (gamepad1.dpad_down)  transitChoice = TransitChoice.OUTSIDE_PARK;
     }
 
 
 
     private void printEASITelemetry() {
         telemetry.addData("AllianceColor", aColor);
-//        telemetry.addData("TransitChoice", transitChoice);
-//        telemetry.addData("StartChoice", startChoice);
+        telemetry.addData("TransitChoice", transitChoice);
+        telemetry.addData("StartChoice", startChoice);
         telemetry.update();
     }
 
     @Override
     public void start() {
 
-//        BBBAutoTrajectories.generateTrajectories(follower, startChoice, transitChoice);
-        startPose = BBBAutoTrajectories.loadingZoneStart;
+        BBBAutoTrajectories.generateTrajectories(follower, startChoice, transitChoice);
+        startPose = AutoTrajectories.loadingZoneStart;
         follower.setPose(startPose);
         follower.update();
         SequentialCommandGroup auto = BBBAutoGenerator.buildAuto(
-                follower
-        //        intake,
-        //        shooter,
-         //       transfer,
-//                startChoice,
-//                transitChoice
+                follower,
+//                intake,
+//                shooter,
+//                transfer,
+                startChoice,
+                transitChoice
+//                wedge,
         );
         CommandScheduler.getInstance().schedule(
                 auto
@@ -120,9 +139,9 @@ public class BioBuzzAuto extends OpMode {
     public void loop() {
         CommandScheduler.getInstance().run();
         follower.update();
+        //turret.updateTurretTracking(follower, telemetry);
 
-
-        BBBAutoTrajectories.savedPose = follower.pose();
+        AutoTrajectories.savedPose = follower.pose();
 
 
         telemetry.update();
