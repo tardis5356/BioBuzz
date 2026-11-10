@@ -36,12 +36,23 @@ public class BBBAutoTrajectories {
         return line(loadingZoneStart, Park).constant(Park);
     }
 
-    private static final Pose gardenStart = poseFactory.of(133.375, 125.4, 270);
+    private static final Pose gardenStart = poseFactory.of(86, 134, 90);
+    private static final Pose gardenIntakeControl1 = poseFactory.of(135.4597, 110.516, 0);
+    private static final Pose gardenIntake = poseFactory.of(136, 134, 90);
+    public Path gardenStartToIntake() {
+        return Paths.curve(gardenStart, gardenIntakeControl1, gardenIntake).linear(gardenStart, gardenIntake);
+    }
+
+    private final Pose ScoringShootPose = poseFactory.of(86, 130, 90);
+
+    public Path gardenIntakeToScoringShoot() {
+        return Paths.line(gardenIntake, ScoringShootPose).linear(gardenIntake, ScoringShootPose);
+    }
+
 
     private static final Pose scoringShootPos = poseFactory.of(83.2814, 118.7464, 270);
     private static final Pose scoringShootPosControl1 = poseFactory.of(110.1863, 123.7146, 0);
     private static final Pose scoringShootPosControl2 = poseFactory.of(141.5, 102.1298, 0);
-    private static final Pose gardenIntake = poseFactory.of(136.5374, 131.9848, -80.5624);
 
     public static Path gardenStartToScoringShoot() {
         return Paths.line(gardenStart,scoringShootPos).linear(gardenStart, scoringShootPos);

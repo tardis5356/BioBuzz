@@ -73,7 +73,7 @@ public class Tests extends Procedure {
 
         Inputs inputs = inputs("Select", "Select");
         Inputs.Field<Test> selectedTest = inputs.e("Test", Test.class).withDefault(Test.LINE);
-        Inputs.Field<Double> distance = inputs.d("Distance").withDefault(48.0);
+        Inputs.Field<Double> distance = inputs.d("Distance").withDefault(24.0);
 
         awaitInputs(inputs);
 
@@ -81,7 +81,7 @@ public class Tests extends Procedure {
             case HOLD:
                 if (!algorithm)
                     throw new IllegalArgumentException("Algorithm is required for Hold Test.");
-                completed = runOpMode(new TestsHold(followerFunction));
+                completed = runOpMode(new TestsHold(followerFunction, localizerFunction));
                 break;
             case LINE:
                 if (!algorithm)
@@ -132,14 +132,17 @@ public class Tests extends Procedure {
 
 class TestsHold extends TuningOpMode<Boolean> {
     Function<HardwareMap, Follower> followerFunction;
+    Function<HardwareMap, Localizer> localizerFunction;
 
-    public TestsHold(Function<HardwareMap, Follower> followerFunction) {
+    public TestsHold(Function<HardwareMap, Follower> followerFunction,  Function<HardwareMap, Localizer> localizerFunction) {
         super("Hold Test", "Tests the Follower's ability to hold a position.", true);
         this.followerFunction = followerFunction;
+        this.localizerFunction = localizerFunction;
     }
 
     @Override
     public Boolean runTuningOpMode() throws InterruptedException {
+        Localizer localizer = localizerFunction.apply(hardwareMap);
         Follower follower = followerFunction.apply(hardwareMap);
         follower.setPose(Pose.zero());
         Thread.sleep(1000);
@@ -149,6 +152,10 @@ class TestsHold extends TuningOpMode<Boolean> {
         follower.hold(Pose.zero());
         while (opModeIsActive()) {
             follower.update();
+            telemetry.addData("Pose X", "%.2f", localizer.pose().x());
+            telemetry.addData("Pose Y","%.2f", localizer.pose().y());
+            telemetry.addData("Pose DEG","%.2f", Math.toDegrees(localizer.pose().heading()));
+            telemetry.update();
         }
         return true;
     }
@@ -211,7 +218,7 @@ class TestsCurve extends TuningOpMode<Boolean> {
         Follower follower = followerFunction.apply(hardwareMap);
         follower.setPose(Pose.zero());
 
-        double distance = 48;
+//        double distance = 24;
         boolean forward = true;
 
         Path path1 = curve(Pose.zero(), new Pose(distance + 0,0), new Pose(distance,distance)).tangent();
