@@ -3,64 +3,66 @@ package org.firstinspires.ftc.teamcode.BarryBeeBenson.Auto;
 import com.pedropathing.follower.Follower;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.AutoTrajectories;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Commands.LaunchSequenceCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBIntake;
+import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBShooter;
+import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBTransfer;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import kotlin.time.Instant;
 
 public class BBBAutoGenerator {
 
     public static SequentialCommandGroup buildAuto(
             Follower follower,
-//            Intake intake,
-//            Shooter shooter,
-//            Transfer transfer,
+            BBBIntake bbbintake,
+            BBBShooter bbbshooter,
+            BBBTransfer bbbtransfer,
 //            Wedge wedge,
-            BioBuzzAuto.StartChoice startChoice,
-            BioBuzzAuto.TransitChoice transitChoice
+            BBBAuto.StartChoice startChoice,
+            BBBAuto.TransitChoice transitChoice
     ) {
         List<Command> seq = new ArrayList<>();
-        if (startChoice == BioBuzzAuto.StartChoice.LOADING_ZONE_PARK) {
+        if (startChoice == BBBAuto.StartChoice.LOADING_ZONE_PARK) {
             return new SequentialCommandGroup(
-                    new FollowPathCommand(follower, AutoTrajectories.loadingZoneStartToPark())
+                    new FollowPathCommand(follower, BBBAutoTrajectories.loadingZoneStartToPark())
             );
         }
 
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
 //        seq.add(new InstantCommand(intake::in));
-        if (startChoice == BioBuzzAuto.StartChoice.GARDEN) {
-            new FollowPathCommand(follower, AutoTrajectories.gardenStartToGardenIntake());
-        } else if (startChoice == BioBuzzAuto.StartChoice.ALLIANCE_FLOWER) {
-//            seq.add(new InstantCommand(wedge::deploy));
-            new FollowPathCommand(follower, AutoTrajectories.allianceFlowerStartToAllianceFlowerIntake());
+        if (startChoice == BBBAuto.StartChoice.GARDEN) {
+            seq.add(new ParallelCommandGroup(
+                    new WaitCommand(5000),
+                    new InstantCommand (() -> bbbintake.in()),
+                    new InstantCommand(() -> bbbshooter.on()),
+                    new InstantCommand(() -> bbbtransfer.on())
+        )
+            );
+            seq.add(new InstantCommand(()->bbbtransfer.stop()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenStartToIntake()));
         }
 //        seq.add(new InstantCommand(intake::stop));
-        if (startChoice == BioBuzzAuto.StartChoice.GARDEN) {
-            new FollowPathCommand(follower, AutoTrajectories.gardenIntakeToLoadingZoneShoot);
-        } else if (startChoice == BioBuzzAuto.StartChoice.ALLIANCE_FLOWER) {
-//            seq.add(new InstantCommand(wedge::retract));
-            new FollowPathCommand(follower, AutoTrajectories.allianceFlowerIntakeToLoadingZoneShoot);
+        if (startChoice == BBBAuto.StartChoice.GARDEN) {
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenIntakeToScoringShoot()));
         }
+////            seq.add(new InstantCommand(wedge::retract));
+//        }
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
 //        seq.add(new InstantCommand(wedge::deploy));
 //        seq.add(new InstantCommand(intake::in));
-        new FollowPathCommand(follower, AutoTrajectories.loadingZoneShootToLoadingZoneFlowerIntake());
+//        new FollowPathCommand(follower, BBBAutoTrajectories.loadingZoneShootToLoadingZoneFlowerIntake());
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
-        new FollowPathCommand(follower, AutoTrajectories.loadingFlowerIntakeToParkPosition());
+        seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.scoringShootToGardenPark()));
 //        seq.add(new InstantCommand(wedge::retract));
 
 
-        return new SequentialCommandGroup(seq.toArray(new Command[0]));
-    }
+        return new SequentialCommandGroup(seq.toArray(new Command[0]));}
 
 }
