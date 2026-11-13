@@ -146,9 +146,9 @@ public class BBBAuto extends OpMode {
 
         BBBAutoTrajectories.savedPose = follower.pose();
 
-        telemetry.addData("X pose", follower.localizer.pose().y());
-        telemetry.addData("y pose", follower.localizer.pose().x());
-        telemetry.addData("heading", follower.localizer.pose().heading());
+        telemetry.addData("X pose", follower.pose().y());
+        telemetry.addData("y pose", follower.pose().x());
+        telemetry.addData("heading", follower.pose().heading());
         telemetry.update();
     }
 

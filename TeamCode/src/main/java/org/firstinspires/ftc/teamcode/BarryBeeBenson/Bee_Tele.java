@@ -10,6 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -79,10 +82,13 @@ public class Bee_Tele extends CommandOpMode {
 
         //TRANSFER
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
-                .whenActive(new InstantCommand(() -> bbbtransfer.on()))
+                .whenActive(
+                        new InstantCommand(() -> bbbtransfer.on())
+
+                )
                 .whenInactive(new InstantCommand(() -> bbbtransfer.stop()));
         //SHOOTER
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.X))
                 .whenActive(new InstantCommand(() -> bbbshooter.on()))
                 .whenInactive(new InstantCommand(() -> bbbshooter.stop()));
 

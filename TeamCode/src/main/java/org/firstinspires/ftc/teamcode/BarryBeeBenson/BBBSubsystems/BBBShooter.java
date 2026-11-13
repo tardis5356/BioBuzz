@@ -17,6 +17,7 @@ public class BBBShooter extends SubsystemBase {
     public BBBShooter(HardwareMap hardwareMap) {
         mBR = hardwareMap.get(DcMotorEx.class, "mBR");
         mF = hardwareMap.get(DcMotorSimple.class, "mF");
+        mF.setDirection(DcMotorSimple.Direction.REVERSE);
         flyWheelSpeed = 1100;
         currentVelocity = mBR.getVelocity();
         bangBangActive = true;
