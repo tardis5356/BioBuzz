@@ -7,17 +7,10 @@ import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
-import com.pedropathing.math.Vector2D;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.curves.Line;
-import com.pedropathing.paths.curves.bezier.BezierCurve;
 import com.pedropathing.paths.interpolator.Interpolator;
 
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBGlobalVariables;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BBBAutoTrajectories {
 
@@ -36,24 +29,21 @@ public class BBBAutoTrajectories {
         return line(loadingZoneStart, Park).constant(Park);
     }
 
-    public static final Pose gardenStart = poseFactory.of(86, 134, 90);
-    public static final Pose gardenIntakeControl1 = poseFactory.of(134, 110.516, 0);
-    public static final Pose gardenIntake = poseFactory.of(130, 134, 90);
+    public static final Pose gardenStart = poseFactory.of(84.65, 130.9, 90);
+    public static final Pose gardenIntakeControl1 = poseFactory.of(120.5, 117, 0);
+    public static final Pose gardenIntake = poseFactory.of(131, 130, 90);
+    public static final Pose gardenIntakeFinal = poseFactory.of(131, 132, 95);
+
     public static Path gardenStartToIntake() {
         return Paths.curve(gardenStart, gardenIntakeControl1, gardenIntake).linear(gardenStart, gardenIntake);
     }
 
-    public static final Pose ScoringShootPose = poseFactory.of(86, 130, 90);
-
-    public static Path gardenIntakeToScoringShoot() {
-        return Paths.line(gardenIntake, ScoringShootPose).linear(gardenIntake, ScoringShootPose);
-    }
 
     public static final Pose gardenParkPose = poseFactory.of(125, 41, 270);
-    public static final Pose gardenParkControl2 = poseFactory.of(108.15, 131, 90);
+    public static final Pose gardenParkControl2 = poseFactory.of(110, 98, 90);
 
-    public static Path scoringShootToGardenPark() {
-        return Paths.curve(ScoringShootPose, gardenParkControl2, gardenParkPose).linear(ScoringShootPose, gardenParkPose);
+    public static Path GardenIntakeToPark() {
+        return Paths.curve(gardenIntakeFinal, gardenParkControl2, gardenParkPose).linear(gardenIntake, gardenParkPose);
     }
 
 

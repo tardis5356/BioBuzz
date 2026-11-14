@@ -5,7 +5,10 @@ import static org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBGlobalVariables.i
 
 import static org.firstinspires.ftc.teamcode.BarryBeeBenson.Auto.BBBAutoTrajectories.startPose;
 
+import android.util.Log;
+
 import com.pedropathing.follower.Follower;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
@@ -32,6 +35,8 @@ public class BBBAuto extends OpMode {
     private BBBIntake bbbintake;
     private BBBShooter bbbshooter;
     private BBBTransfer bbbtransfer;
+
+    private GoBildaPinpointDriver driver;
 //    private Wedge wedge;
 
     private BBBGlobalVariables.AColor aColor;
@@ -80,6 +85,7 @@ public class BBBAuto extends OpMode {
         bbbintake = new BBBIntake(hardwareMap);
         bbbshooter = new BBBShooter(hardwareMap);
         bbbtransfer = new BBBTransfer(hardwareMap);
+        driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 //        wedge = new Wedge(hardwareMap);
 
     }
@@ -149,6 +155,9 @@ public class BBBAuto extends OpMode {
         telemetry.addData("X pose", follower.pose().y());
         telemetry.addData("y pose", follower.pose().x());
         telemetry.addData("heading", follower.pose().heading());
+        if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY) {
+            Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
+        }
         telemetry.update();
     }
 

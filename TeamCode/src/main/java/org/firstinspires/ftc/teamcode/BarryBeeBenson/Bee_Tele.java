@@ -76,7 +76,7 @@ public class Bee_Tele extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(new InstantCommand(() -> bbbintake.in()))
                 .whenInactive(new InstantCommand(() -> bbbintake.stop()));
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
                 .whenActive(new InstantCommand(() -> bbbintake.out()))
                 .whenInactive(new InstantCommand(() -> bbbintake.stop()));
 

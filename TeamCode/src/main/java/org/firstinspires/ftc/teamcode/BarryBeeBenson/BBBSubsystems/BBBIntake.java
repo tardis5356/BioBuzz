@@ -33,7 +33,7 @@ sIR.setPower(1);
 
 public void out() {
 mI.setPower(1);
-sIR.setPower(-1);
+sIR.setPower(1);
 sIL.setPower(-1);
 }
 public void stop() {

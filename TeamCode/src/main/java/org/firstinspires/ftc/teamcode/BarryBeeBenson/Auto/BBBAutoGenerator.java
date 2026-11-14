@@ -16,8 +16,6 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.TransferSequenceCo
 import java.util.ArrayList;
 import java.util.List;
 
-import kotlin.time.Instant;
-
 public class BBBAutoGenerator {
 
     public static SequentialCommandGroup buildAuto(
@@ -47,13 +45,13 @@ public class BBBAutoGenerator {
         )
             );
             seq.add(new InstantCommand(()->bbbtransfer.stop()));
+            seq.add(new InstantCommand(() -> bbbshooter.stop()));
             seq.add(new ParallelCommandGroup(
                     new WaitCommand(5000),
-                    new FollowPathCommand(follower, BBBAutoTrajectories.gardenStartToIntake())));
-        }
-        if (startChoice == BBBAuto.StartChoice.GARDEN) {
-            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenIntakeToScoringShoot()));
-            seq.add(new InstantCommand(() -> bbbtransfer.on()));
+                    new FollowPathCommand(follower, BBBAutoTrajectories.gardenStartToIntake()),
+                    new InstantCommand(() -> bbbintake.in())
+            ));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.GardenIntakeToPark()));
         }
 //        }
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
@@ -61,7 +59,9 @@ public class BBBAutoGenerator {
 //        seq.add(new InstantCommand(intake::in));
 //        new FollowPathCommand(follower, BBBAutoTrajectories.loadingZoneShootToLoadingZoneFlowerIntake());
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
-        seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.scoringShootToGardenPark()));
+
+//        seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.GardenIntakeToPark()));
+
 //        seq.add(new InstantCommand(wedge::retract));
 
 
