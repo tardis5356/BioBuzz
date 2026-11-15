@@ -20,7 +20,7 @@ public class Wedge extends SubsystemBase {
     }
 
     public void deploy() {
-        sW.setPosition(BotPositions.Ramp.FRONT);
+        sW.setPosition(BotPositions.Ramp.DEPLOY);
     }
 
 

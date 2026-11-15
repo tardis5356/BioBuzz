@@ -12,13 +12,13 @@ public class Intake extends SubsystemBase {
     public enum Intake_State { IN, STOP, OUT }
     public enum IntakeMode { MANUAL, AUTO }
 
-    public static Intake_State intake_State = Intake_State.STOP;
-    public static IntakeMode intakeMode = IntakeMode.MANUAL;
+    public static Intake_State intake_State;
+    public static IntakeMode intakeMode;
 
     private DcMotorEx mIF, mIB;
     private DcMotorEx[] intakeMotors;
 
-    private DigitalChannel[] intakeBeamBreaks;
+//    private DigitalChannel[] intakeBeamBreaks;
     private DigitalChannel bbS;
 
     private boolean[] latched;
@@ -37,25 +37,27 @@ public class Intake extends SubsystemBase {
         mIB = hardwareMap.get(DcMotorEx.class, "mIB");
 
         mIF.setDirection(DcMotorSimple.Direction.REVERSE);
-        mIB.setDirection(DcMotorSimple.Direction.FORWARD);
+        mIB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeMotors = new DcMotorEx[]{mIF, mIB};
 
-        DigitalChannel bb1 = hardwareMap.get(DigitalChannel.class, "bb1");
-        DigitalChannel bb2 = hardwareMap.get(DigitalChannel.class, "bb2");
-        DigitalChannel bb3 = hardwareMap.get(DigitalChannel.class, "bb3");
-        DigitalChannel bb4 = hardwareMap.get(DigitalChannel.class, "bb4");
-        bbS = hardwareMap.get(DigitalChannel.class, "bbS");
+//        DigitalChannel bb1 = hardwareMap.get(DigitalChannel.class, "bb1");
+//        DigitalChannel bb2 = hardwareMap.get(DigitalChannel.class, "bb2");
+//        DigitalChannel bb3 = hardwareMap.get(DigitalChannel.class, "bb3");
+//        DigitalChannel bb4 = hardwareMap.get(DigitalChannel.class, "bb4");
+//        bbS = hardwareMap.get(DigitalChannel.class, "bbS");
+        intakeMode = IntakeMode.MANUAL;
+        intake_State = Intake_State.STOP;
 
-        intakeBeamBreaks = new DigitalChannel[]{bb1, bb2, bb3, bb4};
-
-        for (DigitalChannel bb : intakeBeamBreaks) {
-            bb.setMode(DigitalChannel.Mode.INPUT);
-        }
-        bbS.setMode(DigitalChannel.Mode.INPUT);
-
-        latched = new boolean[intakeBeamBreaks.length];
-        lastBroken = new long[intakeBeamBreaks.length];
+//        intakeBeamBreaks = new DigitalChannel[]{bb1, bb2, bb3, bb4};
+//
+//        for (DigitalChannel bb : intakeBeamBreaks) {
+//            bb.setMode(DigitalChannel.Mode.INPUT);
+//        }
+//        bbS.setMode(DigitalChannel.Mode.INPUT);
+//
+//        latched = new boolean[intakeBeamBreaks.length];
+//        lastBroken = new long[intakeBeamBreaks.length];
 
         stop();
     }
@@ -64,48 +66,49 @@ public class Intake extends SubsystemBase {
     public void periodic() {
 
         // Count balls
-        int bbBallCount = 0;
-        for (int i = 0; i < intakeBeamBreaks.length; i++) {
-            if (getIntakeBeamBreakState(i)) bbBallCount++;
-        }
-
-        // Reset overflow timer when safe
-        if (bbBallCount <= 2) {
-            bbOverflowTimer.reset();
-        }
-
-        // Overflow triggers auto mode
-        if (intakeMode == IntakeMode.MANUAL && bbOverflowTimer.seconds() > 0.5) {
-            enableAuto();
-            out();
-        }
-
-        // AUTO MODE: continue outtaking until bbS clears
-        if (intakeMode == IntakeMode.AUTO) {
-            boolean sState = getShooterBeamBreakState();
-
-            if (!sState) {  // bbS is clear
-                stop();
-                disableAuto();
-            }
-        }
+//        int bbBallCount = 0;
+//        for (int i = 0; i < intakeBeamBreaks.length; i++) {
+//            if (getIntakeBeamBreakState(i)) bbBallCount++;
+//        }
+//
+//        // Reset overflow timer when safe
+//        if (bbBallCount <= 2) {
+//            bbOverflowTimer.reset();
+//        }
+//
+//        // Overflow triggers auto mode
+//        if (intakeMode == IntakeMode.MANUAL && bbOverflowTimer.seconds() > 0.2) {
+//            enableAuto();
+//            out();
+//        }
+//
+//        // AUTO MODE: continue outtaking until bbS clears
+//        if (intakeMode == IntakeMode.AUTO) {
+//            boolean sState = getShooterBeamBreakState();
+//
+//            if (!sState) {  // bbS is clear
+//                stop();
+//                disableAuto();
+//                in();
+//            }
+//        }
     }
 
     // === Beam Break Latching ===
 
-    private boolean getIntakeBeamBreakState(int index) {
-        long now = System.currentTimeMillis();
-        boolean broken = !intakeBeamBreaks[index].getState(); // false = broken
-
-        if (broken) {
-            latched[index] = true;
-            lastBroken[index] = now;
-        } else if (latched[index] && now - lastBroken[index] > CLEAR_TIME_MS) {
-            latched[index] = false;
-        }
-
-        return latched[index];
-    }
+//    private boolean getIntakeBeamBreakState(int index) {
+//        long now = System.currentTimeMillis();
+//        boolean broken = !intakeBeamBreaks[index].getState(); // false = broken
+//
+//        if (broken) {
+//            latched[index] = true;
+//            lastBroken[index] = now;
+//        } else if (latched[index] && now - lastBroken[index] > CLEAR_TIME_MS) {
+//            latched[index] = false;
+//        }
+//
+//        return latched[index];
+//    }
 
     private boolean getShooterBeamBreakState() {
         long now = System.currentTimeMillis();

@@ -51,9 +51,8 @@ public final class BotPositions {
 
     public static final class Ramp {
         public static double
-                FRONT = 1,
-                BACK = 0,
-                RETRACT = .5;
+                DEPLOY = .75,
+                RETRACT = .25;
     }
 
 

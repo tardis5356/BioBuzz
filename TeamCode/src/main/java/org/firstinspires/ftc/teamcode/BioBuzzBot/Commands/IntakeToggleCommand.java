@@ -18,10 +18,10 @@ public class IntakeToggleCommand extends CommandBase {
     public void initialize() {
 
         Intake.Intake_State current = Intake.intake_State;
-        if (current == Intake.Intake_State.STOP) {
+        if (current != target) {
             if (target == Intake.Intake_State.IN) intake.in();
             else intake.out();
-        }else {
+        }else{
             intake.stop();
         }
 

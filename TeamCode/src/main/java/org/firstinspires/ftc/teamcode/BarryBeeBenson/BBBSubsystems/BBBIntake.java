@@ -15,32 +15,46 @@ public class BBBIntake extends SubsystemBase {
     DcMotorSimple mI;
     CRServo sIL, sIR;
 
-    public BBBIntake (HardwareMap hardwareMap){
+    public enum Intake_State {IN, STOP, OUT}
+
+
+
+    public static BBBIntake.Intake_State intake_State;
+
+
+    public BBBIntake(HardwareMap hardwareMap) {
         mI = hardwareMap.get(DcMotorSimple.class, "mI");
 
         sIL = hardwareMap.get(CRServo.class, "sIL");
         sIR = hardwareMap.get(CRServo.class, "sIR");
 
+        intake_State = BBBIntake.Intake_State.STOP;
     }
 
 
+    public void in() {
+        mI.setPower(-1);
+        sIL.setPower(-1);
+        sIR.setPower(1);
 
-public void in() {
-mI.setPower(-1);
-sIL.setPower(-1);
-sIR.setPower(1);
-}
+        intake_State = BBBIntake.Intake_State.IN;
+    }
 
-public void out() {
-mI.setPower(1);
-sIR.setPower(1);
-sIL.setPower(-1);
-}
-public void stop() {
-  mI.setPower(0);
-  sIL.setPower(0);
-  sIR.setPower(0);
-}
+    public void out() {
+        mI.setPower(1);
+        sIR.setPower(1);
+        sIL.setPower(-1);
+
+        intake_State = BBBIntake.Intake_State.OUT;
+    }
+
+    public void stop() {
+        mI.setPower(0);
+        sIL.setPower(0);
+        sIR.setPower(0);
+
+        intake_State = BBBIntake.Intake_State.STOP;
+    }
 
 }
 

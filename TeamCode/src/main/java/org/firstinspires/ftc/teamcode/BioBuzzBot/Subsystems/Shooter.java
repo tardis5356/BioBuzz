@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
     public static boolean bangBangActive;
     InterpolatingDoubleTreeMap HoodRegression = new InterpolatingDoubleTreeMap();
     public InterpolatingDoubleTreeMap WheelRegression = new InterpolatingDoubleTreeMap();
-    public double targetFlyWheelSpeed;
+    public double targetFlyWheelSpeed = 0;
     public double hoodOffset;
 
     public int speedOffset;
@@ -35,9 +35,11 @@ public class Shooter extends SubsystemBase {
 
     public boolean spinning;
 
-    double distanceFromTarget;
+    double distanceFromTarget = 0;
 
-    public boolean shooterLock = false;
+    public boolean shooterLock;
+    public static double hoodPos;
+    public static double flywheelTarget;
 
     public enum ShooterPreset {
         CLOSE,
@@ -70,34 +72,33 @@ public class Shooter extends SubsystemBase {
 //        HoodRegression.put(167.7, .18);
 //
 //        WheelRegression.put(167.7, 1425.);
-
+        spinning = true;
+        shooterLock = false;
+        bangBangActive = false;
         targeting = true;
     }
 
     @Override
     public void periodic() {
 
-        setTargetDistance(GlobalVariables.distanceFromTarget);
+//        setTargetDistance(GlobalVariables.distanceFromTarget);
+//
+//        setVel(WheelRegression.get(distanceFromTarget));
 
-        setVel(WheelRegression.get(distanceFromTarget));
-
-        double hoodPos;
-        double flywheelTarget;
 
 // === HOOD CONTROL ===
         if (targeting) {
-            if (shooterLock) {
-                hoodPos = BotPositions.Shooter.HOOD_PRESETS.get(shooterPreset) + hoodOffset;
-            } else {
-                hoodPos = HoodRegression.get(distanceFromTarget) + hoodOffset;
-            }
+//            if (shooterLock) {
+//                hoodPos = BotPositions.Shooter.HOOD_PRESETS.get(shooterPreset) + hoodOffset;
+//            } else {
+//                hoodPos = HoodRegression.get(distanceFromTarget) + hoodOffset;
+//            }
         } else {
             hoodPos = hoodOffset;
         }
-
         sH.setPosition(hoodPos);
 
-// === FLYWHEEL CONTROL ===
+//// === FLYWHEEL CONTROL ===
         if (spinning) {
 
             if (shooterLock) {
@@ -138,12 +139,16 @@ public class Shooter extends SubsystemBase {
         return mST.getVelocity();
     }
 
+    public double getHoodPosition() {
+        return sH.getPosition();
+    }
+
     public void setTargetDistance(double d) {
         distanceFromTarget = d;
     }
 
     public double getTargetFlyWheelSpeed() {
-        return targetFlyWheelSpeed;
+        return targetFlyWheelSpeed + speedOffset;
     }
 
 

@@ -6,13 +6,14 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Gate;
 
 public class LaunchSequenceCommand extends SequentialCommandGroup {
-    public LaunchSequenceCommand(Intake intake, Transfer transfer) {
+    public LaunchSequenceCommand(Intake intake, Gate transfer) {
         addCommands(
                 //TODO Check the waits and sequence
                 new SequentialCommandGroup(
+                        new InstantCommand(intake::enableAuto),
                         new InstantCommand(transfer::openGate),
                         new InstantCommand(intake::stop),
                         new WaitCommand(200),
@@ -21,6 +22,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                         new WaitCommand(450),
                         new InstantCommand(transfer::closeGate),
                         new InstantCommand(intake::stop),
+                        new InstantCommand(intake::disableAuto),
                         new InstantCommand(() -> Shooter.bangBangActive = false)
                 )
         );

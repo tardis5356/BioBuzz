@@ -2,17 +2,8 @@ package org.firstinspires.ftc.teamcode.BioBuzzBot.Auto;
 
 import com.pedropathing.follower.Follower;
 import com.seattlesolvers.solverslib.command.Command;
-import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
-
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Commands.LaunchSequenceCommand;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Camera;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
 
 import java.util.ArrayList;
 import java.util.List;

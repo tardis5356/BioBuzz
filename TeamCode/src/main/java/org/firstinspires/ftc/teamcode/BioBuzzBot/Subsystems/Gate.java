@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-public class Transfer extends SubsystemBase {
+public class Gate extends SubsystemBase {
 
     private Servo sG;
     public boolean gate_Open = false;
 
-    public Transfer(HardwareMap hardwareMap) {
+    public Gate(HardwareMap hardwareMap) {
         sG = hardwareMap.get(Servo.class, "sG");
         closeGate();
     }

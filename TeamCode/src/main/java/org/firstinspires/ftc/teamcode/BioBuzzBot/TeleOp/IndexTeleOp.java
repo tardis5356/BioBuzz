@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Gate;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
 
 
@@ -29,7 +29,7 @@ public class IndexTeleOp extends CommandOpMode {
     Intake intake;
     Turret turret;
     Shooter shooter;
-    Transfer transfer;
+    Gate gate;
     Wedge wedge;
 
     GamepadEx driver1, driver2;
@@ -46,7 +46,7 @@ public class IndexTeleOp extends CommandOpMode {
 
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
-        transfer = new Transfer(hardwareMap);
+        gate = new Gate(hardwareMap);
         turret = new Turret(hardwareMap);
         wedge = new Wedge(hardwareMap);
 
@@ -78,7 +78,7 @@ public class IndexTeleOp extends CommandOpMode {
         //GATE
 
         new Trigger(() -> (driver1.getButton(GamepadKeys.Button.TRIANGLE))).toggleWhenActive(
-                new InstantCommand(transfer::openGate), new InstantCommand(transfer::closeGate)
+                new InstantCommand(gate::openGate), new InstantCommand(gate::closeGate)
         );
 
         //Turret
@@ -127,7 +127,7 @@ public class IndexTeleOp extends CommandOpMode {
     public void run() {
         super.run();
 
-        BioBuzzTeleOp.driveRun(gamepad1, follower, CURRENT_SPEED_MULTIPLIER);
+        //BioBuzzTeleOp.driveRun(gamepad1, follower, CURRENT_SPEED_MULTIPLIER);
         follower.update();
         turret.updateTurretTracking(follower, telemetry);
 

@@ -9,13 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariables;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.Constants;
 @Autonomous(name = "BioBuzz Auto"
        // , preselectTeleOp = "BioBuzz Teleop"

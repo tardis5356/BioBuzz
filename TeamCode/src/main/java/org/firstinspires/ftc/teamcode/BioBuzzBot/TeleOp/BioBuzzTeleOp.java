@@ -7,6 +7,9 @@ import static org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.GlobalVariabl
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
@@ -22,7 +25,7 @@ import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Intake;
 
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Wedge;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Transfer;
+import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Gate;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.BioBuzzBot.Auto.pedroPathing.Constants;
 
@@ -32,11 +35,12 @@ public class BioBuzzTeleOp extends CommandOpMode {
     Intake intake;
     Turret turret;
     Shooter shooter;
-    Transfer transfer;
+    Gate gate;
     Wedge wedge;
 
     GamepadEx driver1, driver2;
     Follower follower;
+    DcMotorEx mFL, mFR, mBL, mBR;
 
     double CURRENT_SPEED_MULTIPLIER;
     double FAST_SPEED_MULTIPLIER = 1;
@@ -48,26 +52,36 @@ public class BioBuzzTeleOp extends CommandOpMode {
         CommandScheduler.getInstance().reset();
 
         intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap);
-        transfer = new Transfer(hardwareMap);
-        turret = new Turret(hardwareMap);
-        wedge = new Wedge(hardwareMap);
-
+//        shooter = new Shooter(hardwareMap);
+//        gate = new Gate(hardwareMap);
+//        turret = new Turret(hardwareMap);
+//        wedge = new Wedge(hardwareMap);
+        mFL = hardwareMap.get(DcMotorEx.class, "mFL");
+        mFR = hardwareMap.get(DcMotorEx.class, "mFR");
+        mBL = hardwareMap.get(DcMotorEx.class, "mBL");
+        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
         CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
-        shooter.spinning = true;
+
+        mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        mBL.setDirection(DcMotorSimple.Direction.REVERSE);
+        mFL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
 
-        follower = Constants.create(hardwareMap);
-        if (savedPose != null) {
-            follower.setPose(savedPose);
-            follower.update();
-        } else {
-            follower.setPose(new Pose(70.75, 70.75, 270));
-            follower.update();
-        }
+//        follower = Constants.create(hardwareMap);
+//        if (savedPose != null) {
+//            follower.setPose(savedPose);
+//            follower.update();
+//        } else {
+//            follower.setPose(new Pose(70.75, 70.75, 270));
+//            follower.update();
+//        }
         //INTAKE
         Trigger manualIntakeMode = new Trigger(() -> Intake.intakeMode == Intake.IntakeMode.MANUAL);
 
@@ -81,39 +95,41 @@ public class BioBuzzTeleOp extends CommandOpMode {
 
 
         //SHOOTER
-        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.SQUARE)))
-                .whenActive(new LaunchSequenceCommand(intake, transfer));
+//        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.SQUARE)))
+//                .whenActive(new LaunchSequenceCommand(intake, gate));
 
-        new Trigger(() -> driver2.getRightY() > .1)
-                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset -= 25));
+//        new Trigger(() -> driver2.getRightY() > .1)
+//                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset -= 25));
+//
+//        new Trigger(() -> driver2.getRightY() < -.1)
+//                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset += 25));
+//
+//        new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
+//                .whenInactive(() -> shooter.hoodOffset += .02);
+//
+//        new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
+//                .whenInactive(() -> shooter.hoodOffset -= .02);
+//
+//        //Camera
+//
+//        //Ramp
+//        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
+//                .toggleWhenActive(new InstantCommand(wedge::deploy), new InstantCommand(wedge::retract));
 
-        new Trigger(() -> driver2.getRightY() < -.1)
-                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset += 25));
 
-        new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
-                .whenInactive(() -> shooter.hoodOffset += .02);
-
-        new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
-                .whenInactive(() -> shooter.hoodOffset -= .02);
-
-        //Camera
-
-        //Ramp
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                .toggleWhenActive(new InstantCommand(wedge::deploy), new InstantCommand(wedge::retract));
 
         //Turret
-        new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))
-                .toggleWhenActive(
-                        new InstantCommand(turret::disableTurretTracking),
-                        new InstantCommand(turret::enableTurretTracking)
-                );
-
-        new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(() -> Turret.manualOffsetDegrees -= 2);
-
-        new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(() -> Turret.manualOffsetDegrees += 2);
+//        new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))
+//                .toggleWhenActive(
+//                        new InstantCommand(turret::disableTurretTracking),
+//                        new InstantCommand(turret::enableTurretTracking)
+//                );
+//
+//        new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+//                .whenInactive(() -> Turret.manualOffsetDegrees -= 2);
+//
+//        new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
+//                .whenInactive(() -> Turret.manualOffsetDegrees += 2);
         //Drive
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(
@@ -121,37 +137,45 @@ public class BioBuzzTeleOp extends CommandOpMode {
                         () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER
                 );
         //Misc.
-        new Trigger(() -> gamepad2.ps)
-                .toggleWhenActive(
-                        new InstantCommand(() -> aColor = GlobalVariables.AColor.RED),
-                        new InstantCommand(() -> aColor = GlobalVariables.AColor.BLUE)
-                );
+//        new Trigger(() -> gamepad2.ps)
+//                .toggleWhenActive(
+//                        new InstantCommand(() -> aColor = GlobalVariables.AColor.RED),
+//                        new InstantCommand(() -> aColor = GlobalVariables.AColor.BLUE)
+//                );
 
 
         telemetry.clearAll();
-//        telemetry.addLine("Ready To Go");
+        telemetry.addLine("Ready To Go");
         telemetry.update();
 
     }
 
     public void run() {
         super.run();
-        driveRun(gamepad1, follower, CURRENT_SPEED_MULTIPLIER);
-        follower.update();
-        turret.updateTurretTracking(follower, telemetry);
+        driveRun(gamepad1, CURRENT_SPEED_MULTIPLIER, mFL, mFR, mBL, mBR);
+//        follower.update();
+//        turret.updateTurretTracking(follower, telemetry);
 
-        savedPose = null;
+//        savedPose = null;
         telemetry.update();
     }
 
 
-    public static void driveRun(Gamepad gamepad1, Follower follower, double CURRENT_SPEED_MULTIPLIER) {
-       double Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75 * CURRENT_SPEED_MULTIPLIER;
+    public static void driveRun(Gamepad gamepad1, double CURRENT_SPEED_MULTIPLIER, DcMotorEx mFL, DcMotorEx mFR, DcMotorEx mBL, DcMotorEx mBR) {
+        double Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75 * CURRENT_SPEED_MULTIPLIER;
         double FB = cubicScaling(gamepad1.left_stick_y) * CURRENT_SPEED_MULTIPLIER;
         double LR = cubicScaling(gamepad1.left_stick_x) * 1.2 * CURRENT_SPEED_MULTIPLIER;
 
-        follower.manual(FB, LR, Rotation);
 
+        double mFLPower = FB + LR + Rotation;
+        double mFRPower = FB - LR - Rotation;
+        double mBLPower = FB - LR + Rotation;
+        double mBRPower = FB + LR - Rotation;
+
+        mFL.setPower(mFLPower);
+        mFR.setPower(mFRPower);
+        mBL.setPower(mBLPower);
+        mBR.setPower(mBRPower);
 
     }
 

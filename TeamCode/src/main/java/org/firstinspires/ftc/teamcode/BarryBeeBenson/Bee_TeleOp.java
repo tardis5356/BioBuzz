@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.BarryBeeBenson;
 
+import static org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBShooter.flyWheelSpeed;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -7,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -18,7 +21,10 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBIntake;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBShooter;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBWedge;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.pedroPathing.Constants;
-    @TeleOp(name = "Bee_TeleOp")
+import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleCommand;
+
+
+@TeleOp(name = "Bee_TeleOp")
 
     public class Bee_TeleOp extends LinearOpMode {
 
@@ -37,10 +43,11 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.pedroPathing.Constants;
         double currentVelocity;
 
 
-        double mFLPower, mFRPower, mBLPower, mBRPower, FB, LR, Rotation, flyWheelSpeed = 2400;
+        double mFLPower, mFRPower, mBLPower, mBRPower, FB, LR, Rotation;
 
         @Override
         public void runOpMode() {
+            CommandScheduler.getInstance().reset();
             //Initialize and hardware map
             bbbintake = new BBBIntake(hardwareMap);
             bbbshooter = new BBBShooter(hardwareMap);
@@ -56,17 +63,54 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.pedroPathing.Constants;
             sIR = hardwareMap.get(CRServo.class, "sIR");
             sI = hardwareMap.get(CRServo.class, "sI");
             sW = hardwareMap.get(Servo.class, "sW");
+            driver1 = new GamepadEx(gamepad1);
+            driver2 = new GamepadEx(gamepad2);
 
-            flyWheelSpeed = 1400;
+
 
             mBL.setDirection(DcMotorSimple.Direction.REVERSE);
             mFL.setDirection(DcMotorSimple.Direction.REVERSE);
             mF.setDirection(DcMotorSimple.Direction.REVERSE);
 
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.X))
+                    .toggleWhenActive(new InstantCommand(() -> bbbshooter.on()),new InstantCommand(() -> bbbshooter.stop()));
+
+            new Trigger(() -> driver2.getRightY() > .1)
+                .whileActiveOnce(new InstantCommand(() -> flyWheelSpeed -= 25));
+
+        new Trigger(() -> driver2.getRightY() < -.1)
+                .whileActiveOnce(new InstantCommand(() -> flyWheelSpeed += 25));
+
+            //TRANSFER
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
+                    .whenActive(new InstantCommand(() -> bbbtransfer.on()));
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
+                    .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
+                    .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
+
+
+            //INTAKE
+            new Trigger(() -> driver1.getButton(GamepadKeys.Button.TRIANGLE))
+                    .whenActive(new IntakeToggleCommand(bbbintake, BBBIntake.Intake_State.IN));
+
+            new Trigger(() -> driver1.getButton(GamepadKeys.Button.CROSS))
+                    .whenActive(new IntakeToggleCommand(bbbintake, BBBIntake.Intake_State.OUT));
+
+
+            //WEDGE
+//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
+//                    .whenActive(new InstantCommand(() -> bbbwedge.up()));
+//            new Trigger(() -> driver1.getButton(GamepadKeys.Button.B))
+//                    .whenActive(new InstantCommand(() -> bbbwedge.down()));
+
 
             waitForStart();
 
             while (opModeIsActive()) {
+
+                CommandScheduler.getInstance().run();
+
                 //Actual Logic Stuff
 
                 FB = -gamepad1.left_stick_y;
@@ -91,32 +135,7 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.pedroPathing.Constants;
                 currentVelocity = mBR.getVelocity();
 
                 //SHOOTER
-                new Trigger(() -> driver2.getButton(GamepadKeys.Button.X))
-                        .whenActive(new InstantCommand(() -> bbbshooter.on()))
-                        .whenInactive(new InstantCommand(() -> bbbshooter.stop()));
-                new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
-                        .whileActiveOnce(new InstantCommand(() -> bbbshooter.flyWheelSpeed += 50 ));
-                new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
-                        .whileActiveOnce(new InstantCommand(() -> bbbshooter.flyWheelSpeed -= 50 ));
 
-                //TRANSFER
-                new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-                        .whenActive(new InstantCommand(() -> bbbtransfer.on()))
-                        .whenInactive(new InstantCommand(() -> bbbtransfer.stop()));
-
-                //INTAKE
-                new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                        .whenActive(new InstantCommand(() -> bbbintake.in()))
-                        .whenInactive(new InstantCommand(() -> bbbintake.stop()));
-                new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                        .whenActive(new InstantCommand(() -> bbbintake.out()))
-                        .whenInactive(new InstantCommand(() -> bbbintake.stop()));
-
-                //WEDGE
-                new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-                        .whenActive(new InstantCommand(() -> bbbwedge.up()));
-                new Trigger(() -> driver1.getButton(GamepadKeys.Button.B))
-                        .whenActive(new InstantCommand(() -> bbbwedge.down()));
 
 //                if (gamepad1.x || gamepad2.x) {
 //                    mF.setPower(currentVelocity < flyWheelSpeed ? 1.0 : 0.0);
