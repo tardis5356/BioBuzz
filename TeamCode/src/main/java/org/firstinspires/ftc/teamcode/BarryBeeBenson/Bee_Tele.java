@@ -82,10 +82,7 @@ public class Bee_Tele extends CommandOpMode {
 
         //TRANSFER
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
-                .whenActive(
-                        new InstantCommand(() -> bbbtransfer.on())
-
-                )
+                .whenActive(new InstantCommand(() -> bbbtransfer.on()))
                 .whenInactive(new InstantCommand(() -> bbbtransfer.stop()));
         //SHOOTER
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.X))
