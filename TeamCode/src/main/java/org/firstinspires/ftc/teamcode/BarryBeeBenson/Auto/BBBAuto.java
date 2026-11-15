@@ -17,10 +17,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBGlobalVariables;
 
 
-//import org.firstinspires.ftc.teamcode.BarryBeeBenson.Subsystems.Intake;
-//import org.firstinspires.ftc.teamcode.BarryBeeBenson.Subsystems.Wedge;
-//import org.firstinspires.ftc.teamcode.BarryBeeBenson.Subsystems.Shooter;
-//import org.firstinspires.ftc.teamcode.BarryBeeBenson.Subsystems.Transfer;
+import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBWedge;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBIntake;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBShooter;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBTransfer;
@@ -35,6 +32,7 @@ public class BBBAuto extends OpMode {
     private BBBIntake bbbintake;
     private BBBShooter bbbshooter;
     private BBBTransfer bbbtransfer;
+    private  BBBWedge bbbwedge;
 
     private GoBildaPinpointDriver driver;
 //    private Wedge wedge;
@@ -86,7 +84,7 @@ public class BBBAuto extends OpMode {
         bbbshooter = new BBBShooter(hardwareMap);
         bbbtransfer = new BBBTransfer(hardwareMap);
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-//        wedge = new Wedge(hardwareMap);
+        bbbwedge = new BBBWedge(hardwareMap);
 
     }
 
@@ -135,9 +133,9 @@ public class BBBAuto extends OpMode {
                 bbbintake,
                 bbbshooter,
                 bbbtransfer,
+                bbbwedge,
                 startChoice,
                 transitChoice
-//                wedge,
         );
         CommandScheduler.getInstance().schedule(
                 auto

@@ -21,14 +21,7 @@ public class BBBAutoTrajectories {
 
     private static final PoseFactory poseFactory = PoseFactory.degrees();
 
-
-    public static final Pose loadingZoneStart = poseFactory.of(128.1, 8.82, 90);
-    public static final Pose Park = poseFactory.of(133.2186, 38.0214, 90);
-
-    public static Path loadingZoneStartToPark() {
-        return line(loadingZoneStart, Park).constant(Park);
-    }
-
+//gardenStart-gardenIntake-park
     public static final Pose gardenStart = poseFactory.of(84.65, 130.9, 90);
     public static final Pose gardenIntakeControl1 = poseFactory.of(120.5, 117, 0);
     public static final Pose gardenIntake = poseFactory.of(131, 130, 90);
@@ -45,7 +38,33 @@ public class BBBAutoTrajectories {
     public static Path GardenIntakeToPark() {
         return Paths.curve(gardenIntakeFinal, gardenParkControl2, gardenParkPose).linear(gardenIntake, gardenParkPose);
     }
+//loadingZoneStartToPark
+    public static final Pose loadingZoneStart = poseFactory.of(132.5, 7.5, 270);
+    public static final Pose parkPose = poseFactory.of(131.098, 32.3367, 270);
 
+    public static Path loadingZoneStartToPark() {
+        return Paths.line(loadingZoneStart, parkPose).constant(parkPose);
+    }
+
+//gardenStart-flowerintake-park
+public static final Pose flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0);
+    public static final Pose flowerIntakePose = poseFactory.of(134, 95, 0);
+
+
+    public static Path gardenStartToFlowerIntakeMidpoint() {
+        return Paths.line(gardenStart, flowerIntakeMidpoint).linear(gardenStart, flowerIntakeMidpoint);
+    }
+
+    public static Path flowerIntakeMidpointToFlowerIntakePose() {
+        return Paths.line(flowerIntakeMidpoint, flowerIntakePose).linear(flowerIntakeMidpoint, flowerIntakePose);
+    }
+
+    public static Path flowerIntakePoseToFlowerIntakeMidpoint() {
+        return Paths.line(flowerIntakePose, flowerIntakeMidpoint).linear(flowerIntakePose, flowerIntakeMidpoint);
+    }
+    public static Path flowerIntakeMidpointToPark() {
+        return Paths.line(flowerIntakeMidpoint, parkPose).linear(flowerIntakeMidpoint, parkPose);
+    }
 
 
 
@@ -82,7 +101,6 @@ public class BBBAutoTrajectories {
         return line(allianceFlowerStart, allianceFlowerIntake).linear(allianceFlowerStart, allianceFlowerIntake);
     }
 
-    private static final Pose parkPosition = poseFactory.of(127.6443, 25.2714, -158.7596);
     private static final Pose loadingZoneFlowerIntakeToParkPositionSegment1Heading = poseFactory.of(127.6443, 25.2714, 270);
 
     private static final Pose loadingZoneFlowerIntake = poseFactory.of(93.5, 12, -90);
@@ -92,9 +110,9 @@ public class BBBAutoTrajectories {
     }
 
 
-    public static Path loadingFlowerIntakeToParkPosition() {
-        return line(loadingZoneFlowerIntake, parkPosition).heading(Interpolator.piecewise().until(0.2401, Interpolator.constant(loadingZoneFlowerIntakeToParkPositionSegment1Heading)).until(1, Interpolator.tangent.reverse()));
-    }
+    //public static Path loadingFlowerIntakeToParkPosition() {
+       // return line(loadingZoneFlowerIntake, parkPosition).heading(Interpolator.piecewise().until(0.2401, Interpolator.constant(loadingZoneFlowerIntakeToParkPositionSegment1Heading)).until(1, Interpolator.tangent.reverse()));
+  //  }
 
 
 

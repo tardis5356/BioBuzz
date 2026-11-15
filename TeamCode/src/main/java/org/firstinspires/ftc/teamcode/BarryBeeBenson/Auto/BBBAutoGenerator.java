@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBIntake;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBShooter;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBTransfer;
+import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBWedge;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.TransferSequenceCommand;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class BBBAutoGenerator {
             BBBIntake bbbintake,
             BBBShooter bbbshooter,
             BBBTransfer bbbtransfer,
-//            Wedge wedge,
+            BBBWedge bbbwedge,
             BBBAuto.StartChoice startChoice,
             BBBAuto.TransitChoice transitChoice
     ) {
@@ -33,7 +34,28 @@ public class BBBAutoGenerator {
                     new FollowPathCommand(follower, BBBAutoTrajectories.loadingZoneStartToPark())
             );
         }
-
+        if (startChoice == BBBAuto.StartChoice.ALLIANCE_FLOWER){
+            seq.add(new ParallelCommandGroup(
+                            new WaitCommand(7000),
+//                    new InstantCommand (() -> bbbintake.in()),
+                            new InstantCommand(() -> bbbshooter.on()),
+                            new TransferSequenceCommand(bbbtransfer)
+                    )
+            );
+//            seq.add(new InstantCommand(()->bbbtransfer.stop()));
+            seq.add(new InstantCommand(() -> bbbshooter.stop()));
+            seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.gardenStartToFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(() -> bbbwedge.down()));
+            seq.add(new ParallelCommandGroup(
+                    new FollowPathCommand(follower,BBBAutoTrajectories.flowerIntakeMidpointToFlowerIntakePose()),
+                    new InstantCommand(() -> bbbintake.in()),
+                    new WaitCommand(6500)
+        ));
+            seq.add(new InstantCommand(()->bbbintake.stop()));
+            seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.flowerIntakePoseToFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(()->bbbwedge.up()));
+            seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.flowerIntakeMidpointToPark()));
+        }
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
 //        seq.add(new InstantCommand(intake::in));
         if (startChoice == BBBAuto.StartChoice.GARDEN) {
@@ -44,13 +66,15 @@ public class BBBAutoGenerator {
                     new TransferSequenceCommand(bbbtransfer)
         )
             );
-            seq.add(new InstantCommand(()->bbbtransfer.stop()));
+//            seq.add(new InstantCommand(()->bbbtransfer.stop()));
             seq.add(new InstantCommand(() -> bbbshooter.stop()));
             seq.add(new ParallelCommandGroup(
                     new WaitCommand(5000),
                     new FollowPathCommand(follower, BBBAutoTrajectories.gardenStartToIntake()),
                     new InstantCommand(() -> bbbintake.in())
             ));
+            seq.add(new InstantCommand(bbbintake::stop));
+
             seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.GardenIntakeToPark()));
         }
 //        }

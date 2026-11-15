@@ -13,7 +13,7 @@ public class BBBWedge extends SubsystemBase {
 
 
     public void up() {
-        sW.setPosition(1);
+        sW.setPosition(.3);
     }
 
     public void down() {

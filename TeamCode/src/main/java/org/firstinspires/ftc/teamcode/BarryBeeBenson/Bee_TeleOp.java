@@ -52,6 +52,7 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
             bbbintake = new BBBIntake(hardwareMap);
             bbbshooter = new BBBShooter(hardwareMap);
             bbbtransfer = new BBBTransfer(hardwareMap);
+            bbbwedge = new BBBWedge(hardwareMap);
 
             mFL = hardwareMap.get(DcMotor.class, "mFL");
             mFR = hardwareMap.get(DcMotor.class, "mFR");
@@ -99,10 +100,10 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
 
 
             //WEDGE
-//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-//                    .whenActive(new InstantCommand(() -> bbbwedge.up()));
-//            new Trigger(() -> driver1.getButton(GamepadKeys.Button.B))
-//                    .whenActive(new InstantCommand(() -> bbbwedge.down()));
+            new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
+                    .whenActive(new InstantCommand(() -> bbbwedge.up()));
+            new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
+                    .whenActive(new InstantCommand(() -> bbbwedge.down()));
 
 
             waitForStart();
