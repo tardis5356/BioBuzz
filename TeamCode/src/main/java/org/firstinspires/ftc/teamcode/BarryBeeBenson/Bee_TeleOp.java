@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBTransfer;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBIntake;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBShooter;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems.BBBWedge;
+import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.TransferSequenceCommand;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleCommand;
 
@@ -72,7 +73,7 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
             mBL.setDirection(DcMotorSimple.Direction.REVERSE);
             mFL.setDirection(DcMotorSimple.Direction.REVERSE);
             mF.setDirection(DcMotorSimple.Direction.REVERSE);
-
+//SHOOTER
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.X))
                     .toggleWhenActive(new InstantCommand(() -> bbbshooter.on()),new InstantCommand(() -> bbbshooter.stop()));
 
@@ -83,12 +84,14 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
                 .whileActiveOnce(new InstantCommand(() -> flyWheelSpeed += 25));
 
             //TRANSFER
+//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
+//                    .whenActive(new InstantCommand(() -> bbbtransfer.on()));
+//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
+//                    .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
+//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
+//                    .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-                    .whenActive(new InstantCommand(() -> bbbtransfer.on()));
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
-                    .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
-                    .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
+                    .whenActive(new TransferSequenceCommand(bbbtransfer));
 
 
             //INTAKE

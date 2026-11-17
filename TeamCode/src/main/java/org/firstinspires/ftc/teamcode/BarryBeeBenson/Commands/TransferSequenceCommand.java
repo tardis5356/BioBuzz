@@ -14,7 +14,7 @@ public class TransferSequenceCommand extends SequentialCommandGroup {
                     //TODO Check the waits and sequence
                     new SequentialCommandGroup(
                             new ParallelCommandGroup(
-                                    new WaitCommand(300),
+                                    new WaitCommand(350),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
@@ -22,7 +22,7 @@ public class TransferSequenceCommand extends SequentialCommandGroup {
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(100),
+                                    new WaitCommand(350),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
@@ -30,7 +30,7 @@ public class TransferSequenceCommand extends SequentialCommandGroup {
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(100),
+                                    new WaitCommand(350),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
@@ -38,15 +38,16 @@ public class TransferSequenceCommand extends SequentialCommandGroup {
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(100),
+                                    new WaitCommand(350),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
                                     new WaitCommand(1000),
+
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(100),
+                                    new WaitCommand(350),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
