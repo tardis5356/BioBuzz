@@ -16,14 +16,14 @@ public class BBBTransfer extends SubsystemBase {
 
 
     public void on() {
-        sI.setPower(-0.8);
+        sI.setPower(-1);
     }
 
     public void stop() {
         sI.setPower(0);}
 
     public void reverse(){
-        sI.setPower(.8);
+        sI.setPower(1);
     }
 }
 

@@ -84,14 +84,14 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
                 .whileActiveOnce(new InstantCommand(() -> flyWheelSpeed += 25));
 
             //TRANSFER
-//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-//                    .whenActive(new InstantCommand(() -> bbbtransfer.on()));
-//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
-//                    .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
-//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
-//                    .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-                    .whenActive(new TransferSequenceCommand(bbbtransfer));
+                    .whenActive(new InstantCommand(() -> bbbtransfer.on()));
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
+                    .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
+                    .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
+//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
+//                    .whenActive(new TransferSequenceCommand(bbbtransfer));
 
 
             //INTAKE
@@ -103,10 +103,11 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
 
 
             //WEDGE
-            new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                    .whenActive(new InstantCommand(() -> bbbwedge.up()));
-            new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
-                    .whenActive(new InstantCommand(() -> bbbwedge.down()));
+//            new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
+//                    .whenInactive(new InstantCommand(() -> bbbwedge.up()))
+//                    .whenActive(new InstantCommand(() -> bbbwedge.down()));
+////
+
 
 
             waitForStart();
@@ -137,6 +138,12 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
 //                mF.setPower(0);
 //            }
                 currentVelocity = mBR.getVelocity();
+
+                if (gamepad1.left_bumper){
+                    bbbwedge.down();
+                } else {
+                    bbbwedge.up();
+                }
 
                 //SHOOTER
 
