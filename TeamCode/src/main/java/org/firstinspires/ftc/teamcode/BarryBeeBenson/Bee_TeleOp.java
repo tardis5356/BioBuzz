@@ -27,82 +27,82 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
 
 @TeleOp(name = "Bee_TeleOp")
 
-    public class Bee_TeleOp extends LinearOpMode {
+public class Bee_TeleOp extends LinearOpMode {
 
-        //Set up hardware components and variables
+    //Set up hardware components and variables
 
-        DcMotor mFL, mFR, mBL;
-        DcMotorEx mBR;
-        CRServo sIL, sIR, sI;
-        Servo sW;
-        DcMotorSimple mF, mI;
-        BBBIntake bbbintake;
-        BBBShooter bbbshooter;
-        BBBTransfer bbbtransfer;
-        BBBWedge bbbwedge;
-        GamepadEx driver1, driver2;
-        double currentVelocity;
-
-
-        double mFLPower, mFRPower, mBLPower, mBRPower, FB, LR, Rotation;
-
-        @Override
-        public void runOpMode() {
-            CommandScheduler.getInstance().reset();
-            //Initialize and hardware map
-            bbbintake = new BBBIntake(hardwareMap);
-            bbbshooter = new BBBShooter(hardwareMap);
-            bbbtransfer = new BBBTransfer(hardwareMap);
-            bbbwedge = new BBBWedge(hardwareMap);
-
-            mFL = hardwareMap.get(DcMotor.class, "mFL");
-            mFR = hardwareMap.get(DcMotor.class, "mFR");
-            mBL = hardwareMap.get(DcMotor.class, "mBL");
-            mBR = hardwareMap.get(DcMotorEx.class, "mBR");
-            mI = hardwareMap.get(DcMotorSimple.class, "mI");
-            mF = hardwareMap.get(DcMotorSimple.class, "mF");
-            sIL = hardwareMap.get(CRServo.class, "sIL");
-            sIR = hardwareMap.get(CRServo.class, "sIR");
-            sI = hardwareMap.get(CRServo.class, "sI");
-            sW = hardwareMap.get(Servo.class, "sW");
-            driver1 = new GamepadEx(gamepad1);
-            driver2 = new GamepadEx(gamepad2);
+    DcMotor mFL, mFR, mBL;
+    DcMotorEx mBR;
+    CRServo sIL, sIR, sI;
+    Servo sW;
+    DcMotorSimple mF, mI;
+    BBBIntake bbbintake;
+    BBBShooter bbbshooter;
+    BBBTransfer bbbtransfer;
+    BBBWedge bbbwedge;
+    GamepadEx driver1, driver2;
+    double currentVelocity;
 
 
+    double mFLPower, mFRPower, mBLPower, mBRPower, FB, LR, Rotation;
 
-            mBL.setDirection(DcMotorSimple.Direction.REVERSE);
-            mFL.setDirection(DcMotorSimple.Direction.REVERSE);
-            mF.setDirection(DcMotorSimple.Direction.REVERSE);
+    @Override
+    public void runOpMode() {
+        CommandScheduler.getInstance().reset();
+        //Initialize and hardware map
+        bbbintake = new BBBIntake(hardwareMap);
+        bbbshooter = new BBBShooter(hardwareMap);
+        bbbtransfer = new BBBTransfer(hardwareMap);
+        bbbwedge = new BBBWedge(hardwareMap);
+
+        mFL = hardwareMap.get(DcMotor.class, "mFL");
+        mFR = hardwareMap.get(DcMotor.class, "mFR");
+        mBL = hardwareMap.get(DcMotor.class, "mBL");
+        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
+        mI = hardwareMap.get(DcMotorSimple.class, "mI");
+        mF = hardwareMap.get(DcMotorSimple.class, "mF");
+        sIL = hardwareMap.get(CRServo.class, "sIL");
+        sIR = hardwareMap.get(CRServo.class, "sIR");
+        sI = hardwareMap.get(CRServo.class, "sI");
+        sW = hardwareMap.get(Servo.class, "sW");
+        driver1 = new GamepadEx(gamepad1);
+        driver2 = new GamepadEx(gamepad2);
+
+
+
+        mBL.setDirection(DcMotorSimple.Direction.REVERSE);
+        mFL.setDirection(DcMotorSimple.Direction.REVERSE);
+        mF.setDirection(DcMotorSimple.Direction.REVERSE);
 //SHOOTER
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.X))
-                    .toggleWhenActive(new InstantCommand(() -> bbbshooter.on()),new InstantCommand(() -> bbbshooter.stop()));
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.X))
+                .toggleWhenActive(new InstantCommand(() -> bbbshooter.on()),new InstantCommand(() -> bbbshooter.stop()));
 
-            new Trigger(() -> driver2.getRightY() > .1)
+        new Trigger(() -> driver2.getRightY() > .1)
                 .whileActiveOnce(new InstantCommand(() -> flyWheelSpeed -= 25));
 
         new Trigger(() -> driver2.getRightY() < -.1)
                 .whileActiveOnce(new InstantCommand(() -> flyWheelSpeed += 25));
 
-            //TRANSFER
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-                    .whenActive(new InstantCommand(() -> bbbtransfer.on()));
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
-                    .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
-                    .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
+        //TRANSFER
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
+                .whenActive(new InstantCommand(() -> bbbtransfer.on()));
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
+                .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
+                .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
 //            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
 //                    .whenActive(new TransferSequenceCommand(bbbtransfer));
 
 
-            //INTAKE
-            new Trigger(() -> driver1.getButton(GamepadKeys.Button.TRIANGLE))
-                    .whenActive(new IntakeToggleCommand(bbbintake, BBBIntake.Intake_State.IN));
+        //INTAKE
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.TRIANGLE))
+                .whenActive(new IntakeToggleCommand(bbbintake, BBBIntake.Intake_State.IN));
 
-            new Trigger(() -> driver1.getButton(GamepadKeys.Button.CROSS))
-                    .whenActive(new IntakeToggleCommand(bbbintake, BBBIntake.Intake_State.OUT));
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.CROSS))
+                .whenActive(new IntakeToggleCommand(bbbintake, BBBIntake.Intake_State.OUT));
 
 
-            //WEDGE
+        //WEDGE
 //            new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
 //                    .whenInactive(new InstantCommand(() -> bbbwedge.up()))
 //                    .whenActive(new InstantCommand(() -> bbbwedge.down()));
@@ -110,42 +110,42 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
 
 
 
-            waitForStart();
+        waitForStart();
 
-            while (opModeIsActive()) {
+        while (opModeIsActive()) {
 
-                CommandScheduler.getInstance().run();
+            CommandScheduler.getInstance().run();
 
-                //Actual Logic Stuff
+            //Actual Logic Stuff
 
-                FB = -gamepad1.left_stick_y;
-                LR = gamepad1.left_stick_x;
-                Rotation = gamepad1.right_stick_x;
+            FB = -gamepad1.left_stick_y;
+            LR = gamepad1.left_stick_x;
+            Rotation = gamepad1.right_stick_x;
 
-                mFLPower = FB + LR + Rotation;
-                mFRPower = FB - LR - Rotation;
-                mBLPower = FB - LR + Rotation;
-                mBRPower = FB + LR - Rotation;
+            mFLPower = FB + LR + Rotation;
+            mFRPower = FB - LR - Rotation;
+            mBLPower = FB - LR + Rotation;
+            mBRPower = FB + LR - Rotation;
 
-                mFL.setPower(mFLPower);
-                mFR.setPower(mFRPower);
-                mBL.setPower(mBLPower);
-                mBR.setPower(mBRPower);
+            mFL.setPower(mFLPower);
+            mFR.setPower(mFRPower);
+            mBL.setPower(mBLPower);
+            mBR.setPower(mBRPower);
 
 //            if (gamepad1.x) {
 //                mF.setPower(flyWheelSpeed);
 //            } else {
 //                mF.setPower(0);
 //            }
-                currentVelocity = mBR.getVelocity();
+            currentVelocity = mBR.getVelocity();
 
-                if (gamepad1.left_bumper){
-                    bbbwedge.down();
-                } else {
-                    bbbwedge.up();
-                }
+            if (gamepad1.left_bumper){
+                bbbwedge.down();
+            } else {
+                bbbwedge.up();
+            }
 
-                //SHOOTER
+            //SHOOTER
 
 
 //                if (gamepad1.x || gamepad2.x) {
@@ -215,15 +215,15 @@ import org.firstinspires.ftc.teamcode.BarryBeeBenson.Commands.IntakeToggleComman
 //                sIR.setPower(-gamepad1.right_trigger);
 
 
-                telemetry.addData("mFL get current position", "%7d",
-                        mFL.getCurrentPosition());
-                telemetry.addData("flyWheelSpeed", flyWheelSpeed);
+            telemetry.addData("mFL get current position", "%7d",
+                    mFL.getCurrentPosition());
+            telemetry.addData("flyWheelSpeed", flyWheelSpeed);
 
-                telemetry.addData("Servo pose",sW.getPosition());
+            telemetry.addData("Servo pose",sW.getPosition());
 
 
-                telemetry.update();
-            }
+            telemetry.update();
         }
+    }
 
 }

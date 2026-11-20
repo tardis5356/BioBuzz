@@ -20,10 +20,10 @@ public class BBBWedge extends SubsystemBase {
 
 
     public void up() {
-        sW.setPosition(0.61);
+        sW.setPosition(0.68);
     }
 
     public void down() {
-        sW.setPosition(0.22);
+        sW.setPosition(0.213);
     }
 }
