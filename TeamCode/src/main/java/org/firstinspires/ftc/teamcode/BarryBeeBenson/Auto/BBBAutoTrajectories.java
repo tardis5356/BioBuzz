@@ -8,7 +8,6 @@ import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.interpolator.Interpolator;
 
 import org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBGlobalVariables;
 
@@ -26,6 +25,7 @@ public class BBBAutoTrajectories {
     public static final Pose gardenIntakeControl1 = poseFactory.of(120.5, 117, 0);
     public static final Pose gardenIntake = poseFactory.of(131, 130, 90);
     public static final Pose gardenIntakeFinal = poseFactory.of(131, 132, 95);
+    public static final Pose audienceFlower = poseFactory.of(93.5,7.5, 270);
 
     public static Path gardenStartToIntake() {
         return Paths.curve(gardenStart, gardenIntakeControl1, gardenIntake).linear(gardenStart, gardenIntake);
@@ -66,53 +66,22 @@ public static final Pose flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0);
         return Paths.line(flowerIntakeMidpoint, parkPose).linear(flowerIntakeMidpoint, parkPose);
     }
 
+        public static final Pose hiveMidpoint = poseFactory.of(81, 40, 90);
+        public static final Pose intakeMidpointAudience = poseFactory.of(93.5, 33, 270);
+        public static final Pose audienceFlowerIntake = poseFactory.of(93.5, 7.5, 270);
 
+        public static Path gardenStartToHiveMidpoint() {
+            return Paths.line(gardenStart, hiveMidpoint).linear(gardenStart, hiveMidpoint);
+        }
 
+        public static Path hiveMidpointToIntakeMidpointAudience() {
+            return Paths.line(hiveMidpoint, intakeMidpointAudience).linear(hiveMidpoint, intakeMidpointAudience);
+        }
 
-    private static final Pose loadingZoneShoot = poseFactory.of(83.28,118.75, 270);
-    private static final Pose gardenIntakeToLoadingZoneShootControl1_Inside = poseFactory.of(78.6157, 130.1729, 0);
-    private static final Pose gardenIntakeToLoadingZoneShootControl2_Inside = poseFactory.of(69.4229, 62.1071, 0);
-    private static final Pose gardenIntakeToLoadingZoneShootControl1_OutsideTravel = poseFactory.of(84.2757, 124.5129, 0);
-    private static final Pose gardenIntakeToLoadingZoneShootControl2_OutsideTravel = poseFactory.of(129.2571, 51.5957, 0);
+        public static Path midpointIntakeToAudienceFlowerIntake() {
+            return Paths.line(audienceFlowerIntake,audienceFlowerIntake).linear(audienceFlowerIntake, audienceFlowerIntake);
+        }
 
-    //TODO Check Outside park PLS
-    private static final Pose gardenIntakeToLoadingZoneShootControl1_OutsidePark = poseFactory.of(99.8586, 100.5829, 0);
-    private static final Pose gardenIntakeToLoadingZoneShootControl2_OutsidePark = poseFactory.of(160, 59.2771, 0);
-
-
-    private static final Pose gardenIntakeToLoadingZoneShootSegment1Heading = poseFactory.of(93.5, 24, 270);
-    private static final Pose gardenIntakeToLoadingZoneShootSegment3Start = poseFactory.of(93.5, 24, -77.055);
-    private static final Pose gardenIntakeToLoadingZoneShootSegment3End = poseFactory.of(93.5, 24, 270);
-
-
-    private static final Pose allianceFlowerStart = poseFactory.of(133.375, 109.889, 90);
-    private static final Pose allianceFlowerIntake = poseFactory.of(128, 93.5, 180);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl1_OutsidePark = poseFactory.of(119.2643, 65.8143, 0);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl2_OutsidePark = poseFactory.of(140, 54.0214, 0);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl1_OutsideTravel = poseFactory.of(88.1343, 90.0715, 0);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl2_OutsideTravel = poseFactory.of(125.85, 37.0414, 0);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl1_Inside = poseFactory.of(70, 145, 0);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootControl2_Inside = poseFactory.of(74.5057, 35.02, 0);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootSegment1Heading = poseFactory.of(93.5, 24, 180);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootSegment3Start = poseFactory.of(93.5, 24, -141.2266);
-    private static final Pose allianceFlowerIntakeToLoadingZoneShootSegment3End = poseFactory.of(93.5, 24, 270);
-
-    public static Path allianceFlowerStartToAllianceFlowerIntake() {
-        return line(allianceFlowerStart, allianceFlowerIntake).linear(allianceFlowerStart, allianceFlowerIntake);
-    }
-
-    private static final Pose loadingZoneFlowerIntakeToParkPositionSegment1Heading = poseFactory.of(127.6443, 25.2714, 270);
-
-    private static final Pose loadingZoneFlowerIntake = poseFactory.of(93.5, 12, -90);
-
-    public static Path loadingZoneShootToLoadingZoneFlowerIntake() {
-        return line(loadingZoneShoot, loadingZoneFlowerIntake).tangent();
-    }
-
-
-    //public static Path loadingFlowerIntakeToParkPosition() {
-       // return line(loadingZoneFlowerIntake, parkPosition).heading(Interpolator.piecewise().until(0.2401, Interpolator.constant(loadingZoneFlowerIntakeToParkPositionSegment1Heading)).until(1, Interpolator.tangent.reverse()));
-  //  }
 
 
 
@@ -178,7 +147,7 @@ public static final Pose flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0);
 
     public static Path allianceFlowerIntakeToLoadingZoneShoot;
 
-    public static void generateTrajectories(Follower follower , BBBAuto.StartChoice startChoice, BBBAuto.TransitChoice transitChoice) {
+    public static void generateTrajectories(Follower follower , BBBAuto.StartChoice startChoice, BBBAuto.IntakeChoice intakeChoice) {
 
         if (aColor == BBBGlobalVariables.AColor.RED) {
             poseFactory.mirrorY(70.75);

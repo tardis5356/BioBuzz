@@ -63,14 +63,14 @@ public class BBBAuto extends OpMode {
 //        }
     }
 
-    public enum TransitChoice{
-        INSIDE,
-        OUTSIDE_TRAVEL,
-        OUTSIDE_PARK
+    public enum IntakeChoice {
+        GARDEN_INTAKE,
+        FLOWER_SCORING,
+        FLOWER_AUDIENCE
     }
 
     StartChoice startChoice;
-    TransitChoice transitChoice;
+    IntakeChoice intakeChoice;
 
 
     @Override
@@ -107,16 +107,16 @@ public class BBBAuto extends OpMode {
         if (gamepad2.dpad_down)  startChoice = StartChoice.LOADING_ZONE_PARK;
 
         // 3. Transit Selection
-        if (gamepad1.dpad_up)    transitChoice = TransitChoice.INSIDE;
-        if (gamepad1.dpad_right) transitChoice = TransitChoice.OUTSIDE_TRAVEL;
-        if (gamepad1.dpad_down)  transitChoice = TransitChoice.OUTSIDE_PARK;
+        if (gamepad1.dpad_up)    intakeChoice = IntakeChoice.GARDEN_INTAKE;
+        if (gamepad1.dpad_right) intakeChoice = IntakeChoice.FLOWER_SCORING;
+        if (gamepad1.dpad_down)  intakeChoice = IntakeChoice.FLOWER_AUDIENCE;
     }
 
 
 
     private void printEASITelemetry() {
         telemetry.addData("AllianceColor", aColor);
-        telemetry.addData("TransitChoice", transitChoice);
+        telemetry.addData("TransitChoice", intakeChoice);
         telemetry.addData("StartChoice", startChoice);
         telemetry.update();
     }
@@ -124,7 +124,7 @@ public class BBBAuto extends OpMode {
     @Override
     public void start() {
 
-        BBBAutoTrajectories.generateTrajectories(follower,startChoice, transitChoice);
+        BBBAutoTrajectories.generateTrajectories(follower,startChoice, intakeChoice);
         startPose = BBBAutoTrajectories.gardenStart;
         follower.setPose(startPose);
         follower.update();
@@ -135,7 +135,7 @@ public class BBBAuto extends OpMode {
                 bbbtransfer,
                 bbbwedge,
                 startChoice,
-                transitChoice
+                intakeChoice
         );
         CommandScheduler.getInstance().schedule(
                 auto

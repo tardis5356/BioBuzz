@@ -26,7 +26,7 @@ public class BBBAutoGenerator {
             BBBTransfer bbbtransfer,
             BBBWedge bbbwedge,
             BBBAuto.StartChoice startChoice,
-            BBBAuto.TransitChoice transitChoice
+            BBBAuto.IntakeChoice intakeChoice
     ) {
         List<Command> seq = new ArrayList<>();
         if (startChoice == BBBAuto.StartChoice.LOADING_ZONE_PARK) {
@@ -34,6 +34,10 @@ public class BBBAutoGenerator {
                     new FollowPathCommand(follower, BBBAutoTrajectories.loadingZoneStartToPark())
             );
         }
+
+
+
+
         if (startChoice == BBBAuto.StartChoice.ALLIANCE_FLOWER){
             seq.add(new ParallelCommandGroup(
                             new WaitCommand(7000),
@@ -43,6 +47,7 @@ public class BBBAutoGenerator {
                     )
             );
 //            seq.add(new InstantCommand(()->bbbtransfer.stop()));
+
             seq.add(new InstantCommand(() -> bbbshooter.stop()));
             seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.gardenStartToFlowerIntakeMidpoint()));
             seq.add(new InstantCommand(() -> bbbwedge.down()));
@@ -58,6 +63,10 @@ public class BBBAutoGenerator {
         }
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
 //        seq.add(new InstantCommand(intake::in));
+
+
+
+
         if (startChoice == BBBAuto.StartChoice.GARDEN) {
             seq.add(new ParallelCommandGroup(
                     new WaitCommand(7000),
@@ -77,16 +86,23 @@ public class BBBAutoGenerator {
 
             seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.GardenIntakeToPark()));
         }
-//        }
-//        seq.add(new LaunchSequenceCommand(intake, transfer));
-//        seq.add(new InstantCommand(wedge::deploy));
-//        seq.add(new InstantCommand(intake::in));
-//        new FollowPathCommand(follower, BBBAutoTrajectories.loadingZoneShootToLoadingZoneFlowerIntake());
-//        seq.add(new LaunchSequenceCommand(intake, transfer));
 
-//        seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.GardenIntakeToPark()));
+        if (intakeChoice == BBBAuto.IntakeChoice.GARDEN_INTAKE){
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenStartToHiveMidpoint()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.hiveMidpointToIntakeMidpointAudience()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.midpointIntakeToAudienceFlowerIntake()));
+// flower intake back to audience scoring pose
+        }
 
-//        seq.add(new InstantCommand(wedge::retract));
+        if (intakeChoice == BBBAuto.IntakeChoice.FLOWER_SCORING){
+
+        }
+
+        if (intakeChoice == BBBAuto.IntakeChoice.FLOWER_AUDIENCE){
+
+        }
+
+
 
 
         return new SequentialCommandGroup(seq.toArray(new Command[0]));}
