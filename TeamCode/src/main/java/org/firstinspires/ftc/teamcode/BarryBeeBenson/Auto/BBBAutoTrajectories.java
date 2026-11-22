@@ -47,7 +47,7 @@ public class BBBAutoTrajectories {
     }
 
 //gardenStart-flowerintake-park
-public static final Pose flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0);
+public static final Pose  flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0);
     public static final Pose flowerIntakePose = poseFactory.of(134, 95, 0);
 
 
@@ -82,8 +82,32 @@ public static final Pose flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0);
             return Paths.line(audienceFlowerIntake,audienceFlowerIntake).linear(audienceFlowerIntake, audienceFlowerIntake);
         }
 
+        public static final Pose audienceFlowerIntakeCP = poseFactory.of(67,134,0);
+        public static final Pose audienceShootPose = poseFactory.of(81, 10, 270);
+        public static Path gardenIntakeToAudienceShoot(){
+            return Paths.curve(gardenIntake, audienceFlowerIntakeCP, audienceShootPose).linear(gardenIntake, audienceShootPose);
+        }
+        public static final Pose audienceFlowerIntakeMidpoint = poseFactory.of(93.5, 36, 270);
+        public static final Pose audienceFlowerIntakePose = poseFactory.of(93.5,7.5,270);
+        public static Path audienceShootToAudienceFlowerIntakeMidpoint(){
+            return Paths.line(audienceShootPose,audienceFlowerIntakeMidpoint).linear(audienceShootPose, audienceFlowerIntakeMidpoint);
+        };
+        public static Path audienceFlowerIntakeMidpointToAudienceFlowerIntake(){
+            return Paths.line(audienceFlowerIntakeMidpoint,audienceFlowerIntakePose).linear(audienceFlowerIntakeMidpoint, audienceFlowerIntakePose);
+        };
 
+        public static Path audienceFlowerIntakeToAudienceFlowerIntakeMidpoint(){
+            return Paths.line(audienceFlowerIntakePose,audienceFlowerIntakeMidpoint).linear(audienceFlowerIntakePose,audienceFlowerIntakeMidpoint);
+        }
 
+    public static Path audienceFlowerIntakeMidpointToAudienceShootPose(){
+        return Paths.line(audienceFlowerIntakeMidpoint,audienceShootPose).linear(audienceFlowerIntakeMidpoint,audienceShootPose);
+    }
+
+    public static Path audienceShootPoseToPark(){
+        return Paths.line(audienceShootPose, parkPose).linear(audienceShootPose, parkPose);
+
+    }
 
 //    public Path reverse(Path originalPath) {
 //

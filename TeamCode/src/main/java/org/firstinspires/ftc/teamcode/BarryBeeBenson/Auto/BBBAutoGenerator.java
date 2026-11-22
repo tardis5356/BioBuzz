@@ -35,9 +35,6 @@ public class BBBAutoGenerator {
             );
         }
 
-
-
-
         if (startChoice == BBBAuto.StartChoice.ALLIANCE_FLOWER){
             seq.add(new ParallelCommandGroup(
                             new WaitCommand(7000),
@@ -46,8 +43,6 @@ public class BBBAutoGenerator {
                             new TransferSequenceCommand(bbbtransfer)
                     )
             );
-//            seq.add(new InstantCommand(()->bbbtransfer.stop()));
-
             seq.add(new InstantCommand(() -> bbbshooter.stop()));
             seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.gardenStartToFlowerIntakeMidpoint()));
             seq.add(new InstantCommand(() -> bbbwedge.down()));
@@ -69,11 +64,11 @@ public class BBBAutoGenerator {
 
         if (startChoice == BBBAuto.StartChoice.GARDEN) {
             seq.add(new ParallelCommandGroup(
-                    new WaitCommand(7000),
+                            new WaitCommand(7000),
 //                    new InstantCommand (() -> bbbintake.in()),
-                    new InstantCommand(() -> bbbshooter.on()),
-                    new TransferSequenceCommand(bbbtransfer)
-        )
+                            new InstantCommand(() -> bbbshooter.on()),
+                            new TransferSequenceCommand(bbbtransfer)
+                    )
             );
 //            seq.add(new InstantCommand(()->bbbtransfer.stop()));
             seq.add(new InstantCommand(() -> bbbshooter.stop()));
@@ -84,21 +79,39 @@ public class BBBAutoGenerator {
             ));
             seq.add(new InstantCommand(bbbintake::stop));
 
-            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.GardenIntakeToPark()));
-        }
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenIntakeToAudienceShoot()));
+            seq.add(new ParallelCommandGroup(
+                            new WaitCommand(7000),
+//                    new InstantCommand (() -> bbbintake.in()),
+                            new InstantCommand(() -> bbbshooter.on()),
+                            new TransferSequenceCommand(bbbtransfer)
+                    )
+            );
+//            seq.add(new InstantCommand(()->bbbtransfer.stop()));
+            seq.add(new InstantCommand(() -> bbbshooter.stop()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceShootToAudienceFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(() -> bbbwedge.down()));
+            seq.add(new ParallelCommandGroup(
+                    new FollowPathCommand(follower, BBBAutoTrajectories.audienceFlowerIntakeMidpointToAudienceFlowerIntake()),
+                    new InstantCommand(() -> bbbintake.in()),
+                    new WaitCommand(6500)
+            ));
+            seq.add(new InstantCommand(() -> bbbintake.stop()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceFlowerIntakeToAudienceFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(() -> bbbwedge.up()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceFlowerIntakeMidpointToAudienceShootPose()));
 
-        if (intakeChoice == BBBAuto.IntakeChoice.GARDEN_INTAKE){
-            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenStartToHiveMidpoint()));
-            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.hiveMidpointToIntakeMidpointAudience()));
-            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.midpointIntakeToAudienceFlowerIntake()));
-// flower intake back to audience scoring pose
-        }
+            seq.add(new ParallelCommandGroup(
+                            new WaitCommand(7000),
+//                    new InstantCommand (() -> bbbintake.in()),
+                            new InstantCommand(() -> bbbshooter.on()),
+                            new TransferSequenceCommand(bbbtransfer)
+                    )
+            );
+            seq.add(new InstantCommand(() -> bbbshooter.stop()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceShootPoseToPark()));
 
-        if (intakeChoice == BBBAuto.IntakeChoice.FLOWER_SCORING){
 
-        }
-
-        if (intakeChoice == BBBAuto.IntakeChoice.FLOWER_AUDIENCE){
 
         }
 
