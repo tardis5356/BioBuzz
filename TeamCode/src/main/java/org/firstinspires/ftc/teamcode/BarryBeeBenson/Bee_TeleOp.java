@@ -41,6 +41,8 @@ public class Bee_TeleOp extends LinearOpMode {
     BBBTransfer bbbtransfer;
     BBBWedge bbbwedge;
     GamepadEx driver1, driver2;
+
+    BBBIntake.Intake_State intake_State;
     double currentVelocity;
 
 
@@ -219,7 +221,11 @@ public class Bee_TeleOp extends LinearOpMode {
                     mFL.getCurrentPosition());
             telemetry.addData("flyWheelSpeed", flyWheelSpeed);
 
-            telemetry.addData("Servo pose",sW.getPosition());
+            telemetry.addData("Windmill Servo pose",sI.getPower());
+            telemetry.addData("Intake Motor Power", mI.getPower());
+            telemetry.addData("Intake State", intake_State);
+            telemetry.addData("get current position", bbbtransfer.getCurrentPosition());
+            telemetry.addData("wedge position", sW.getPosition());
 
 
             telemetry.update();

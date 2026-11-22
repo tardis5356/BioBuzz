@@ -19,7 +19,7 @@ public class IntakeToggleCommand extends CommandBase {
     public void initialize() {
 
         BBBIntake.Intake_State current = BBBIntake.intake_State;
-        if (current != target) {
+        if (current != target || current == null) {
             if (target == BBBIntake.Intake_State.IN) intake.in();
             else intake.out();
         }else{

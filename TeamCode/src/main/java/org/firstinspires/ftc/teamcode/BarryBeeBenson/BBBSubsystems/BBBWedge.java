@@ -10,8 +10,7 @@ public class BBBWedge extends SubsystemBase {
 
     public BBBWedge(HardwareMap hardwareMap) {
 
-        sW = hardwareMap.get(Servo.class, "sW"
-        );
+        sW = hardwareMap.get(Servo.class, "sW");
         sW.setDirection(Servo.Direction.REVERSE);
     }
 
@@ -20,8 +19,8 @@ public class BBBWedge extends SubsystemBase {
 
 
     public void up() {
-        sW.setPosition(0.68);
-    }
+        sW.setPosition(0.65);
+    } // 0.68
 
     public void down() {
         sW.setPosition(0.213);
