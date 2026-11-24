@@ -13,47 +13,49 @@ public class TransferSequenceCommand extends SequentialCommandGroup {
             addCommands(
                     //TODO Check the waits and sequence
                     new SequentialCommandGroup(
+                            new InstantCommand(()-> bbbtransfer.autoWindmill = true),
                             new ParallelCommandGroup(
-                                    new WaitCommand(350),
+                                    new WaitCommand(400),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(1000),
+                                    new WaitCommand(1200),
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(350),
+                                    new WaitCommand(400),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(1000),
+                                    new WaitCommand(1200),
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(350),
+                                    new WaitCommand(400),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(1000),
+                                    new WaitCommand(1200),
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(350),
+                                    new WaitCommand(400),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(1000),
+                                    new WaitCommand(1200),
 
                                     new InstantCommand(bbbtransfer::stop)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(350),
+                                    new WaitCommand(400),
                                     new InstantCommand(bbbtransfer::on)
                             ),
                             new ParallelCommandGroup(
-                                    new WaitCommand(1000),
+                                    new WaitCommand(1200),
                                     new InstantCommand(bbbtransfer::stop)
-                            )
+                            ),
+            new InstantCommand(()-> bbbtransfer.autoWindmill = false)
 
                     )
             );

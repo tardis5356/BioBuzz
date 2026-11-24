@@ -11,6 +11,8 @@ public class BBBTransfer extends SubsystemBase {
 
     boolean windmillOn;
 
+   public boolean autoWindmill;
+
     double defaultWindmillPosition = 0.13;
 
     double windmillTolerance;
@@ -24,11 +26,14 @@ public class BBBTransfer extends SubsystemBase {
     @Override
     public void periodic(){
         if (!windmillOn){
-            if (Math.abs(getCurrentPosition() -  defaultWindmillPosition)> .1){
-                sI.setPower(.5);
-            } else {
-                sI.setPower(0);
-            }
+            if (!autoWindmill){
+                if (Math.abs(getCurrentPosition() -  defaultWindmillPosition)> .1){
+                    sI.setPower(.5);
+                } else {
+                    sI.setPower(0);
+                }
+            } else sI.setPower(0);
+
         } else {
             sI.setPower(-1);
         }

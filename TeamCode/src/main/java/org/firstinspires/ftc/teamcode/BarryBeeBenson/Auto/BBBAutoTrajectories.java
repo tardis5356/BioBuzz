@@ -25,7 +25,6 @@ public class BBBAutoTrajectories {
     public static final Pose gardenIntakeControl1 = poseFactory.of(120.5, 117, 0);
     public static final Pose gardenIntake = poseFactory.of(131, 130, 90);
     public static final Pose gardenIntakeFinal = poseFactory.of(131, 132, 95);
-    public static final Pose audienceFlower = poseFactory.of(93.5,7.5, 270);
 
     public static Path gardenStartToIntake() {
         return Paths.curve(gardenStart, gardenIntakeControl1, gardenIntake).linear(gardenStart, gardenIntake);
@@ -62,35 +61,25 @@ public static final Pose  flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0)
     public static Path flowerIntakePoseToFlowerIntakeMidpoint() {
         return Paths.line(flowerIntakePose, flowerIntakeMidpoint).linear(flowerIntakePose, flowerIntakeMidpoint);
     }
-    public static Path flowerIntakeMidpointToPark() {
-        return Paths.line(flowerIntakeMidpoint, parkPose).linear(flowerIntakeMidpoint, parkPose);
+//    public static Path flowerIntakeMidpointToPark() {
+//        return Paths.line(flowerIntakeMidpoint, parkPose).linear(flowerIntakeMidpoint, parkPose);
+//    }
+public static final Pose fsAudienceFlowerIntakeControlPoint = poseFactory.of(125,36,0);
+    public static Path flowerIntakeMidpointToAudienceShoot(){
+        return Paths.curve(flowerIntakeMidpoint, fsAudienceFlowerIntakeControlPoint, faAudienceShootPose).linear(flowerIntakeMidpoint, faAudienceShootPose);
     }
 
-        public static final Pose hiveMidpoint = poseFactory.of(81, 40, 90);
-        public static final Pose intakeMidpointAudience = poseFactory.of(93.5, 33, 270);
-        public static final Pose audienceFlowerIntake = poseFactory.of(93.5, 7.5, 270);
-
-        public static Path gardenStartToHiveMidpoint() {
-            return Paths.line(gardenStart, hiveMidpoint).linear(gardenStart, hiveMidpoint);
-        }
-
-        public static Path hiveMidpointToIntakeMidpointAudience() {
-            return Paths.line(hiveMidpoint, intakeMidpointAudience).linear(hiveMidpoint, intakeMidpointAudience);
-        }
-
-        public static Path midpointIntakeToAudienceFlowerIntake() {
-            return Paths.line(audienceFlowerIntake,audienceFlowerIntake).linear(audienceFlowerIntake, audienceFlowerIntake);
-        }
 
         public static final Pose audienceFlowerIntakeCP = poseFactory.of(67,134,0);
-        public static final Pose audienceShootPose = poseFactory.of(81, 10, 270);
+        public static final Pose gaAudienceShootPose = poseFactory.of(81, 10, 270);
+        public static final Pose faAudienceShootPose = poseFactory.of(84, 15, 270);
         public static Path gardenIntakeToAudienceShoot(){
-            return Paths.curve(gardenIntake, audienceFlowerIntakeCP, audienceShootPose).linear(gardenIntake, audienceShootPose);
+            return Paths.curve(gardenIntake, audienceFlowerIntakeCP, gaAudienceShootPose).linear(gardenIntake, gaAudienceShootPose);
         }
         public static final Pose audienceFlowerIntakeMidpoint = poseFactory.of(93.5, 36, 270);
         public static final Pose audienceFlowerIntakePose = poseFactory.of(93.5,7.5,270);
         public static Path audienceShootToAudienceFlowerIntakeMidpoint(){
-            return Paths.line(audienceShootPose,audienceFlowerIntakeMidpoint).linear(audienceShootPose, audienceFlowerIntakeMidpoint);
+            return Paths.line(gaAudienceShootPose,audienceFlowerIntakeMidpoint).linear(gaAudienceShootPose, audienceFlowerIntakeMidpoint);
         };
         public static Path audienceFlowerIntakeMidpointToAudienceFlowerIntake(){
             return Paths.line(audienceFlowerIntakeMidpoint,audienceFlowerIntakePose).linear(audienceFlowerIntakeMidpoint, audienceFlowerIntakePose);
@@ -101,11 +90,11 @@ public static final Pose  flowerIntakeMidpoint = poseFactory.of(109.9274, 95, 0)
         }
 
     public static Path audienceFlowerIntakeMidpointToAudienceShootPose(){
-        return Paths.line(audienceFlowerIntakeMidpoint,audienceShootPose).linear(audienceFlowerIntakeMidpoint,audienceShootPose);
+        return Paths.line(audienceFlowerIntakeMidpoint, gaAudienceShootPose).linear(audienceFlowerIntakeMidpoint, gaAudienceShootPose);
     }
 
     public static Path audienceShootPoseToPark(){
-        return Paths.line(audienceShootPose, parkPose).linear(audienceShootPose, parkPose);
+        return Paths.line(gaAudienceShootPose, parkPose).linear(gaAudienceShootPose, parkPose);
 
     }
 

@@ -35,36 +35,63 @@ public class BBBAutoGenerator {
             );
         }
 
-        if (startChoice == BBBAuto.StartChoice.ALLIANCE_FLOWER){
+        if (startChoice == BBBAuto.StartChoice.ALLIANCE_FLOWER) {
             seq.add(new ParallelCommandGroup(
-                            new WaitCommand(7000),
+                            new WaitCommand(8000),
 //                    new InstantCommand (() -> bbbintake.in()),
                             new InstantCommand(() -> bbbshooter.on()),
                             new TransferSequenceCommand(bbbtransfer)
                     )
             );
-            seq.add(new InstantCommand(() -> bbbshooter.stop()));
-            seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.gardenStartToFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(() -> bbbshooter.stop())); // not needed
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenStartToFlowerIntakeMidpoint()));
             seq.add(new InstantCommand(() -> bbbwedge.down()));
             seq.add(new ParallelCommandGroup(
-                    new FollowPathCommand(follower,BBBAutoTrajectories.flowerIntakeMidpointToFlowerIntakePose()),
+                    new FollowPathCommand(follower, BBBAutoTrajectories.flowerIntakeMidpointToFlowerIntakePose()),
                     new InstantCommand(() -> bbbintake.in()),
                     new WaitCommand(6500)
-        ));
-            seq.add(new InstantCommand(()->bbbintake.stop()));
-            seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.flowerIntakePoseToFlowerIntakeMidpoint()));
-            seq.add(new InstantCommand(()->bbbwedge.up()));
-            seq.add(new FollowPathCommand(follower,BBBAutoTrajectories.flowerIntakeMidpointToPark()));
+            ));
+            seq.add(new InstantCommand(() -> bbbintake.stop())); // not needed?
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.flowerIntakePoseToFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(() -> bbbwedge.up()));
+            //SHOOT
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.flowerIntakeMidpointToAudienceShoot()));
+            seq.add(new ParallelCommandGroup(
+                            new WaitCommand(8000),
+//                    new InstantCommand (() -> bbbintake.in()),
+                            new InstantCommand(() -> bbbshooter.on()),
+                            new TransferSequenceCommand(bbbtransfer)
+                    )
+            );
+            seq.add(new InstantCommand(() -> bbbshooter.stop())); // not needed
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceShootToAudienceFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(() -> bbbwedge.down()));
+            seq.add(new ParallelCommandGroup(
+                    new FollowPathCommand(follower, BBBAutoTrajectories.audienceFlowerIntakeMidpointToAudienceFlowerIntake()),
+                    new InstantCommand(() -> bbbintake.in()),
+                    new WaitCommand(6500)));
+            seq.add(new InstantCommand(() -> bbbintake.stop()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceFlowerIntakeToAudienceFlowerIntakeMidpoint()));
+            seq.add(new InstantCommand(() -> bbbwedge.up()));
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceFlowerIntakeMidpointToAudienceShootPose()));
+            seq.add(new ParallelCommandGroup(
+                            new WaitCommand(8000),
+//                    new InstantCommand (() -> bbbintake.in()),
+                            new InstantCommand(() -> bbbshooter.on()),
+                            new TransferSequenceCommand(bbbtransfer)
+                    )
+            );
+            seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceShootPoseToPark()));
+
+
         }
 //        seq.add(new LaunchSequenceCommand(intake, transfer));
 //        seq.add(new InstantCommand(intake::in));
 
 
-
-
         if (startChoice == BBBAuto.StartChoice.GARDEN) {
             seq.add(new ParallelCommandGroup(
-                            new WaitCommand(7000),
+                            new WaitCommand(8000),
 //                    new InstantCommand (() -> bbbintake.in()),
                             new InstantCommand(() -> bbbshooter.on()),
                             new TransferSequenceCommand(bbbtransfer)
@@ -81,7 +108,7 @@ public class BBBAutoGenerator {
 
             seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.gardenIntakeToAudienceShoot()));
             seq.add(new ParallelCommandGroup(
-                            new WaitCommand(7000),
+                            new WaitCommand(8000),
 //                    new InstantCommand (() -> bbbintake.in()),
                             new InstantCommand(() -> bbbshooter.on()),
                             new TransferSequenceCommand(bbbtransfer)
@@ -102,7 +129,7 @@ public class BBBAutoGenerator {
             seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceFlowerIntakeMidpointToAudienceShootPose()));
 
             seq.add(new ParallelCommandGroup(
-                            new WaitCommand(7000),
+                            new WaitCommand(8000),
 //                    new InstantCommand (() -> bbbintake.in()),
                             new InstantCommand(() -> bbbshooter.on()),
                             new TransferSequenceCommand(bbbtransfer)
@@ -112,12 +139,10 @@ public class BBBAutoGenerator {
             seq.add(new FollowPathCommand(follower, BBBAutoTrajectories.audienceShootPoseToPark()));
 
 
-
         }
 
 
-
-
-        return new SequentialCommandGroup(seq.toArray(new Command[0]));}
+        return new SequentialCommandGroup(seq.toArray(new Command[0]));
+    }
 
 }

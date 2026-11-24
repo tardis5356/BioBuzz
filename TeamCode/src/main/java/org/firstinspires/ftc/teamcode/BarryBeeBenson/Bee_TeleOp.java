@@ -92,8 +92,8 @@ public class Bee_TeleOp extends LinearOpMode {
                 .whenActive(new InstantCommand(() -> bbbtransfer.stop()));
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y))
                 .whenActive(new InstantCommand(() -> bbbtransfer.reverse()));
-//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
-//                    .whenActive(new TransferSequenceCommand(bbbtransfer));
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
+                    .whenActive(new TransferSequenceCommand(bbbtransfer));
 
 
         //INTAKE
@@ -102,6 +102,10 @@ public class Bee_TeleOp extends LinearOpMode {
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.CROSS))
                 .whenActive(new IntakeToggleCommand(bbbintake, BBBIntake.Intake_State.OUT));
+
+        //WEDGE
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                .whenActive(new InstantCommand(bbbwedge :: block));
 
 
         //WEDGE

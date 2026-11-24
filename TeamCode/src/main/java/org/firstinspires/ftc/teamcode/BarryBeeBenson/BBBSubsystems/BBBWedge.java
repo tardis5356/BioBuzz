@@ -1,4 +1,4 @@
- package org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems;
+package org.firstinspires.ftc.teamcode.BarryBeeBenson.BBBSubsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,14 +15,15 @@ public class BBBWedge extends SubsystemBase {
     }
 
 
-
-
-
     public void up() {
+        sW.setPosition(0.76);
+    }
+
+    public void block() {
         sW.setPosition(0.65);
-    } // 0.68
+    }
 
     public void down() {
-        sW.setPosition(0.213);
+        sW.setPosition(0.365);
     }
 }
